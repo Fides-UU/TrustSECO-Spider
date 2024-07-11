@@ -56,7 +56,7 @@ class CVESpider:
             # Initialise the list of CVE data
             data = []
             # Go through all the links and extract the CVE data
-            for cve_code in cve_codes:
+            for cve_code in cve_codes[:40]:
                 cve_data = self.extract_cve_data(cve_code)
                 if cve_data is not None:
                     data.append(cve_data)
