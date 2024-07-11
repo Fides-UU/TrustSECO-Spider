@@ -433,7 +433,7 @@ class Controller:
             # Initialise the value variable
             value = None
 
-            if data_point == 'virus_ratio':
+            if data_point == 'vs_virus_ratio':
                 value = self.vs_comm.get_virus_ratio(
                     download_links
                 )

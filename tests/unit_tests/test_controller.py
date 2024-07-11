@@ -356,7 +356,7 @@ class TestControllerData:
         release = 'v1.22.1'
         # Set the wanted data to all of the virus scan data points
         wanted_data = [
-            'virus_ratio',
+            'vs_virus_ratio',
             'unknown'
         ]
 
@@ -366,7 +366,7 @@ class TestControllerData:
         # Assert that the returned dictionary only contains the virus ratio
         # and that the value of that ratio is equal to the one we specified
         assert result == {
-            'virus_ratio': 0.0,
+            'vs_virus_ratio': 0.0,
             'unknown': None,
         }
 

@@ -191,7 +191,7 @@
                 "null"
             ]
         },
-        "virus_ratio": {
+        "vs_virus_ratio": {
             "type": [
                 "number",
                 "null"

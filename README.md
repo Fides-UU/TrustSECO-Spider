@@ -207,7 +207,7 @@ input_json = {
     'project_release': 'v.1.22.1',
   },
   "virus_scanning": [
-    "virus_ratio"
+    "vs_virus_ratio"
   ]
 }
 ```

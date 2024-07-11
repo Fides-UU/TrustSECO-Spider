@@ -37,6 +37,6 @@
         "so_popularity"
     ],
     "virus_scanning": [
-        "virus_ratio"
+        "vs_virus_ratio"
     ]
 }

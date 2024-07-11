@@ -60,7 +60,7 @@ so_dict = {
 
 virus_dict = {
     "virus_scanning": [
-        "virus_ratio"
+        "vs_virus_ratio"
     ]
 }
 
