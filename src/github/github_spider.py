@@ -46,7 +46,7 @@ class GitHubSpider:
 
         # Get the <a> tags that might contain our number
         possible_links = soup.find_all(
-            'a', class_='Link--primary no-underline')
+            'a', class_='Link--primary no-underline Link')
 
         # Initialise the counter to None
         user_count = None

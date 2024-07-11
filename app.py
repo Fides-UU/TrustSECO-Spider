@@ -59,6 +59,9 @@ def get_data() -> Response:
     # Get the result from the spider
     result = controller.get_data(input_json)
 
+    logging.info('Result:')
+    logging.info(json.dumps(result, indent=4))
+
     # Return the result
     if 'Error' in result:
         response = make_response(result['Error'], 400)
@@ -177,7 +180,7 @@ if __name__ == '__main__':
             ['chmod', '777', 'clamav/sockets/'], capture_output=True)
 
     # Set the logging level
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     # Start the Flask application
     app.run(host='0.0.0.0', port=5000, debug=False, use_evalex=False)
