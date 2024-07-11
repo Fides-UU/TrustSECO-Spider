@@ -1159,14 +1159,14 @@
 
 
   <div class="flex-self-center ml-3 flex-self-stretch d-none d-lg-flex flex-items-center lh-condensed-ultra">
-    <a data-pjax="#repo-content-pjax-container" href="/numpy/numpy/branches" class="Link--primary no-underline">
+    <a data-pjax="#repo-content-pjax-container" href="/numpy/numpy/branches" class="Link--primary no-underline Link">
           <svg text="gray" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-git-branch">
     <path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path>
 </svg>
           <strong>24</strong>
           <span class="color-fg-muted">branches</span>
     </a>
-    <a data-pjax="#repo-content-pjax-container" href="/numpy/numpy/tags" class="ml-3 Link--primary no-underline">
+    <a data-pjax="#repo-content-pjax-container" href="/numpy/numpy/tags" class="Link--primary no-underline Link">
       <svg text="gray" aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-tag">
     <path fill-rule="evenodd" d="M2.5 7.775V2.75a.25.25 0 01.25-.25h5.025a.25.25 0 01.177.073l6.25 6.25a.25.25 0 010 .354l-5.025 5.025a.25.25 0 01-.354 0l-6.25-6.25a.25.25 0 01-.073-.177zm-1.5 0V2.75C1 1.784 1.784 1 2.75 1h5.025c.464 0 .91.184 1.238.513l6.25 6.25a1.75 1.75 0 010 2.474l-5.026 5.026a1.75 1.75 0 01-2.474 0l-6.25-6.25A1.75 1.75 0 011 7.775zM6 5a1 1 0 100 2 1 1 0 000-2z"></path>
 </svg>
@@ -2707,7 +2707,7 @@ and how to successfully get involved.</p>
           <div class="BorderGrid-row">
             <div class="BorderGrid-cell">
               <h2 class="h4 mb-3" data-pjax="#repo-content-pjax-container">
-  <a href="/numpy/numpy/releases" data-view-component="true" class="Link--primary no-underline">
+  <a href="/numpy/numpy/releases" data-view-component="true" class="Link--primary no-underline Link">
     Releases
       <span title="81" data-view-component="true" class="Counter">81</span>
 </a></h2>
@@ -2739,7 +2739,7 @@ and how to successfully get involved.</p>
         <a data-hovercard-type="organization" data-hovercard-url="/orgs/numfocus/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self" href="/numfocus">
           <img class="avatar d-block mr-2" src="https://avatars.githubusercontent.com/u/1421094?s=64&amp;v=4" width="32" height="32" alt="@numfocus">
 </a>        <span class="mr-2 flex-self-center flex-auto min-width-0 css-truncate css-truncate-target width-fit">
-          <a class="Link--primary no-underline" href="/numfocus">
+          <a class="Link--primary no-underline Link" href="/numfocus">
             <strong>numfocus</strong>
             <span class="color-fg-muted">NumFOCUS</span>
 </a>        </span>
@@ -2778,7 +2778,7 @@ and how to successfully get involved.</p>
           <div class="BorderGrid-row">
             <div class="BorderGrid-cell">
               <h2 class="h4 mb-3">
-  <a href="/orgs/numpy/packages?repo_name=numpy" data-view-component="true" class="Link--primary no-underline">
+  <a href="/orgs/numpy/packages?repo_name=numpy" data-view-component="true" class="Link--primary no-underline Link">
     Packages <span title="0" hidden="hidden" data-view-component="true" class="Counter">0</span>
 </a></h2>
 
@@ -2796,7 +2796,7 @@ and how to successfully get involved.</p>
               
 
     <h2 class="h4 mb-3">
-      <a href="/numpy/numpy/network/dependents?package_id=UGFja2FnZS01NjkxMzc3OA%3D%3D" data-view-component="true" class="Link--primary no-underline">
+      <a href="/numpy/numpy/network/dependents?package_id=UGFja2FnZS01NjkxMzc3OA%3D%3D" data-view-component="true" class="Link--primary no-underline Link">
         Used by <span title="975,170" data-view-component="true" class="Counter">975k</span>
 </a>    </h2>
 
@@ -2837,7 +2837,7 @@ and how to successfully get involved.</p>
           <div class="BorderGrid-row">
             <div class="BorderGrid-cell">
               <h2 class="h4 mb-3">
-  <a href="/numpy/numpy/graphs/contributors" data-view-component="true" class="Link--primary no-underline">
+  <a href="/numpy/numpy/graphs/contributors" data-view-component="true" class="Link--primary no-underline Link">
     Contributors <span title="1,286" data-view-component="true" class="Counter">1,286</span>
 </a></h2>
 
