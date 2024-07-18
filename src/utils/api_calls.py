@@ -72,7 +72,8 @@ def make_api_call(api_url: str, api_type: str) -> requests.Response:
             time.sleep(30)
             return make_api_call(api_url, api_type)
     elif (
-        data_response.status_code == 403
+        api_type == constants.API_GITHUB
+        and data_response.status_code == 403
         and data_response.json()["documentation_url"]
         == "https://docs.github.com/free-pro-team@latest/rest/overview/rate-limits-for-the-rest-api#about-secondary-rate-limits"
     ):
