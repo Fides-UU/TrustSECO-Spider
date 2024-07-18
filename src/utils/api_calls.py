@@ -65,21 +65,32 @@ def make_api_call(api_url: str, api_type: str) -> requests.Response:
             logging.warning(
                 f'Too many requests. Trying again in {retry_time} seconds.')
             time.sleep(retry_time)
-            return make_api_call(api_url)
+            return make_api_call(api_url, api_type)
         # If not, use 30 seconds, as it is half the rate limit reset time
         else:
             logging.warning('Too many requests. Trying again in 30 seconds.')
             time.sleep(30)
-            return make_api_call(api_url)
+            return make_api_call(api_url, api_type)
+    elif (
+        data_response.status_code == 403
+        and data_response.json()["documentation_url"]
+        == "https://docs.github.com/free-pro-team@latest/rest/overview/rate-limits-for-the-rest-api#about-secondary-rate-limits"
+    ):
+        logging.warning('Reached secondary rate limit, retrying after 60 seconds.')
+        time.sleep(60)
+        return make_api_call(api_url, api_type)
+
     # Else, we got an unknown error so return None
     else:
         if api_type == constants.API_GITHUB:
             logging.error(
-                f'Unable to get data from GitHub: {data_response.status_code}')
+                f'Unable to get data from GitHub: {data_response.status_code}'
+                + f'\n{api_url}\n{data_response.text}\n{data_response.headers}')
             return None
         elif api_type == constants.API_LIBRARIES:
             logging.error(
-                f'Unable to get data from Libraries.io: {data_response.status_code}')
+                f'Unable to get data from Libraries.io: {data_response.status_code}'
+                + f'\n{api_url}\n{data_response.text}\n{data_response.headers}\n{api_type}')
             return None
 
 
