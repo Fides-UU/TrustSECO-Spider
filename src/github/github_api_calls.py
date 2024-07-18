@@ -316,8 +316,10 @@ class GitHubAPICall:
                 if page_highest_star_count >= stargazer_count and page_lowest_star_count <= stargazer_count:
                     # If so, find the repository in the page
                     for index in range(len(page_data['items'])):
-                        if page_data['items'][index]['full_name'] == owner + '/' + repo:
+                        if page_data['items'][index]['full_name'].lower() == owner + '/' + repo:
                             return index + (middle_page_number - 1) * 100
+                    # Repo wasn't found in the correct bounds, return none
+                    return None
 
                 # If we didn't find the correct page, update the bounds
                 if page_lowest_star_count > stargazer_count:
