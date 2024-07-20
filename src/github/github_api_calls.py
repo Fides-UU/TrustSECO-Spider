@@ -738,10 +738,10 @@ class GitHubAPICall:
                 return total_stargazer_count
 
     def get_release_download_links(self, owner: str, repo: str, release: str) -> List[str]:
-        """Function to get the release assets' download links.
+        """Function to get the release download links.
 
         This is done by getting the release information using `GitHubAPICall.get_release_data`,
-        and then looping through the assets.
+        and then looping through the assets. Also includes the zipped archive of the repo.
 
         Args:
             owner (str): The owner of the repository
@@ -764,7 +764,7 @@ class GitHubAPICall:
             return None
 
         # Get the download links
-        output = []
+        output = ['zipball_url']
         for asset in release_data['assets']:
             output.append(asset['browser_download_url'])
 
