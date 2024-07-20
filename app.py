@@ -1,6 +1,11 @@
 """File containing the setup for the Flask application.
 
 Running this file will start the Flask application on the localhost at port 5000.
+
+It then exposes the following endpoints:
+- /get_data
+- /set_tokens
+- /get_tokens
 """
 
 # Import for filesystem IO
@@ -53,6 +58,9 @@ def get_data() -> Response:
 
     # Get the result from the spider
     result = controller.get_data(input_json)
+
+    logging.info('Result:')
+    logging.info(json.dumps(result, indent=4))
 
     # Return the result
     if 'Error' in result:
@@ -172,7 +180,7 @@ if __name__ == '__main__':
             ['chmod', '777', 'clamav/sockets/'], capture_output=True)
 
     # Set the logging level
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
 
     # Start the Flask application
     app.run(host='0.0.0.0', port=5000, debug=False, use_evalex=False)

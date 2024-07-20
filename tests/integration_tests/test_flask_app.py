@@ -1,8 +1,7 @@
-"""File for testing the app.py functions
+"""File for testing the integration tests between the Flask app and the Controller.
 
-The functions that have to be tested are all Flask functions,
-hence we need to setup test clients to see if the program works
-as expected.
+In order to test this, we need to make sure that any API call the Flask app receives
+is passed onto the Controller correctly.
 """
 
 # Imports for testing
@@ -23,18 +22,17 @@ client = app.test_client()
      'Github token set. Libraries token set.')
 ])
 class TestSetTokens:
-    """Class for testing the set_tokens route"""
+    """Class containing the tests for the set_tokens route"""
 
     def test_set_keys(self, json_input: dict, return_value: str) -> None:
-        """
-        Function for testing the set_tokens function.
+        """Function for testing the set_tokens function.
 
         The test is done by examining the returned text
         to see if it matches our expectations.
 
         Args:
-            json_input (dict): A JSON object containing the possible permutations of token keywords for the APIs
-            return_value (str): A string denoting the final result of the function
+            json_input (dict): A JSON object containing the possible permutations of token keywords for the APIs.
+            return_value (str): A string denoting the final result of the function.
         """
 
         # Send a post request to the client
@@ -46,16 +44,13 @@ class TestSetTokens:
 
 
 class TestGetTokens:
-    """Class for testing the get_tokens route"""
+    """Class containing the tests for the get_tokens route"""
 
     def test_get_tokens(self) -> None:
-        """
-        Function for testing the get_tokens function.
+        """Function for testing the get_tokens function.
 
-        The test is done by actually reading the .env file
-        for the currently stored tokens. We can do this as
-        the tests for set_tokens create and update the
-        .env file.
+        The test is done by actually reading the .env file for the currently stored tokens.
+        We can do this as the tests for set_tokens create and update the .env file.
         """
 
         # Send a get request to the client
@@ -78,18 +73,15 @@ class TestGetTokens:
 
 
 class TestGetData:
-    """Class for testing the get_data route"""
+    """Class containing the tests for the get_data route"""
 
     @mock.patch('controller.Controller')
     def test_get_data(self, mock_controller: mock.Mock) -> None:
-        """
-        Function for testing the get_data function.
+        """Function for testing the get_data function.
 
-        The test is done by setting the return value of Controller.run() to a
-        predetermined value. Then, we assert that the final returned value is
-        equal to this predetermined value, as that means that the run()
-        function has been called, and it's return value has been returned
-        correctly.
+        The test is done by setting the return value of Controller.run() to a predetermined value.
+        Then, we assert that the final returned value is equal to this predetermined value,
+        as that means that the run() function has been called and returned the correct value.
         """
 
         # Set the return value of the run() function to a predetermined value
@@ -100,3 +92,9 @@ class TestGetData:
 
         # Make sure we get back the predetermined value
         assert result == {'returned': 'value'}
+
+
+"""
+This program has been developed by students from the bachelor Computer Science at Utrecht University within the Software Project course.
+© Copyright Utrecht University (Department of Information and Computing Sciences)
+"""

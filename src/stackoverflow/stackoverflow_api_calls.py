@@ -1,13 +1,8 @@
-"""File containing the Stack Overflow spider
+"""File containing the Stack Overflow API call processor.
 
-This file contains the logic for the spider that will
-allow the program to use BeautifulSoup and Requests
-in order to scrape wanted data-points from the Stack Overflow website.
+This file contains the logic for crawling through the [Stack Overflow website](https://stackoverflow.com/).
 
-    Typical usage:
-
-    foo = StackOverflowSpider()
-    bar = foo.get_monthly_popularity('package')
+This API calls are done by using the [Requests](https://requests.readthedocs.io/en/latest/) library.
 """
 
 # Import for improved logging
@@ -16,24 +11,19 @@ import logging
 import requests
 
 
-class StackOverflowSpider:
-    """Class methods for getting data from Stack Overflow
-
-    This class handles all of the spidering jobs for the Stack Overflow website.
-    It uses requests to get the webpage, and BeautifulSoup to parse and traverse it.
-    """
+class StackOverflowAPICall:
+    """Class methods for getting data from Stack Overflow"""
 
     def get_monthly_popularity(self, package: str) -> float:
-        """
-        Get the monthly popularity of the given package.
+        """Function to get the monthly popularity of a package.
+
+        The data required is retrieved from the [Stack Overflow Insights API endpoint](https://insights.stackoverflow.com/trends/get-data)
 
         Args:
-            package (str): The name of the package
+            package (str): The name of the package.
 
         Returns:
-            float: The latest monthly popularity of the given package
-
-            This popularity is the percentage of questions posted that were about the given package.
+            float: The latest monthly popularity of the given package. This popularity is the percentage of questions posted that were about the given package.
         """
 
         logging.info('Getting monthly popularity')

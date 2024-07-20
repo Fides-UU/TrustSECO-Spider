@@ -9,23 +9,22 @@ Our program retrieves most data-points using GitHub's REST API. Sadly, not all o
 It can currently get the following data-points from GitHub:
 
 - Repository information:
-  - Number of contributors
-  - Number of users
-  - Number of downloads
-    - Per release
-    - In total
-  - Number of commits per year:
-    - In the past year from the current date
-  - Repository language
-  - GitStar ranking
+	- Number of contributors
+	- Number of users
+	- Number of downloads
+		- Per release
+		- In total
+	- Number of commits in the last year
+	- Repository language
+	- GitStar ranking
 - Issues information:
-  - Number of open issues
-  - Number of issues without a response
-  - Number of issues of a specific release
-  - Ratio of open to closed issues
-  - Average issue resolution time
+	- Number of open issues
+	- Number of issues without a response
+	- Number of issues of a specific release
+	- Ratio of open to closed issues
+	- Average issue resolution time
 - Owner information:
-  - Number of stargazers
+	- Number of stargazers
 
 ## Libraries.io
 
@@ -34,15 +33,15 @@ All of the data-points are gathered using various Libraries.io's APIs.
 The currently available data-points are:
 
 - Project:
-  - Release frequency
-  - Number of dependencies
-  - Number of dependents
-  - Number of releases
-  - Latest release date
-  - First release date
-  - Sourcerank
+	- Release frequency
+	- Number of dependencies
+	- Number of dependents
+	- Number of releases
+	- Latest release date
+	- First release date
+	- Sourcerank
 - Repository:
-  - Contributor count
+	- Contributor count
 
 ## CVE
 
@@ -53,9 +52,9 @@ For each of these codes, it can get the following information:
 - CVE ID
 - Vulnerability score
 - Affected versions:
-  - Start version
-  - End version
-  - The type thereof (inclusive or exclusive)
+	- Start version
+	- End version
+	- The type thereof (inclusive or exclusive)
 
 ## Stack Overflow
 
@@ -208,7 +207,7 @@ input_json = {
     'project_release': 'v.1.22.1',
   },
   "virus_scanning": [
-    "virus_ratio"
+    "vs_virus_ratio"
   ]
 }
 ```

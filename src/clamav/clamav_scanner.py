@@ -1,14 +1,7 @@
 """File containing the communication between the TrustSECO-Spider and the ClamAV virus scanner.
 
-This file contains all the logic for
-scanning a list of urls (that point to files).
-The scanning is done using ClamAV which
-is running in another Docker container.
-
-    Typical usage:
-
-    foo = ClamAVScanner()
-    bar = foo.get_virus_ratio([url1, url2, url3])
+This file contains all the logic for scanning a list of urls (that point to files).
+The scanning is done using ClamAV, which runs in a separate Docker container.
 """
 
 # Import os to allow for file checking and console usage
@@ -21,17 +14,20 @@ from typing import List
 
 
 class ClamAVScanner:
-    """ Class methods for scanning web links that direct to files for viruses. """
+    """ Class for scanning web links that direct to files."""
 
     def get_virus_ratio(self, links: List[str]) -> float:
-        """
-        Scans the given links' contents for viruses.
+        """Function to scan the given list of links for viruses. Return the ratio of viruses found.
+
+        This function loops through the given list of links and checks if the link is virus-free.
+        When it is done, it will divide the number of virus-free links by the total number of links.
+        It then returns this ratio.
 
         Args:
             links (list): List of web links to the files to scan.
 
         Returns:
-            float: Percentage of links that have been scanned for viruses.
+            float: Ratio of infected links.
         """
 
         # Make sure we have a list of links
@@ -68,8 +64,11 @@ class ClamAVScanner:
         return infected_links / len(links)
 
     def scan_link(self, link: str) -> bool:
-        """
-        Scans the given link's contents for viruses.
+        """Function to scan the given link for viruses.
+
+        It does this by sending an file-stream to the ClamAV container using the UNIX socket.
+        The file-stream is created using the `wget` command.
+        It then reads the output of the command and checks how many viruses were found.
 
         Args:
             link (str): Web link to the file to scan.
@@ -105,11 +104,12 @@ class ClamAVScanner:
             return True
 
     def check_socket_availability(self) -> bool:
-        """
-        Checks whether or not the socket file exists, and is accepting connections.
+        """Function for checking if the ClamAV UNIX socket is available and listening.
+
+        It does this by using the `socat` command to send a dummy message to the socket.
 
         Returns:
-            bool: Whether or not the socket exists and is listening
+            bool: Whether or not the socket exists and is listening.
         """
 
         # See if the file-path exists

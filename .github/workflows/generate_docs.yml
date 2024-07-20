@@ -1,0 +1,59 @@
+name: Generate documentation
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on the creation of a new release
+  release:
+    types: [released]
+  # Triggers on a commit to main, so the documentation of main will stay up-to-date
+  push:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Set an environmental variable for the release tag
+env:
+  TAG: ${{ github.ref_name }}
+
+# Add the actual jobs
+jobs:
+  # Build the documentation and upload the static HTML files as an artifact
+  create-documentation:
+    runs-on: ubuntu-latest
+    # Allow the job to write to GitHub Pages
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v3
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements_docs.txt
+
+      # Actually generate the documentation
+      # Generate the readme.html file
+      - name: Generate README file
+        run: python -m markdown -x fenced_code -x codehilite README.md -f pdoc/readme.html
+
+        # Generate the documentation
+      - name: Generate documentation
+        run: pdoc --docformat=google --logo "https://avatars.githubusercontent.com/u/100304333" --logo-link "https://github.com/Fides-UU" -t pdoc/ -o docs/ app.py controller.py demo.py src/utils src/stackoverflow src/libraries_io src/github src/cve src/clamav
+
+      - name: Deployment
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          destination_dir: ${{ env.TAG }}
+
+      - name: URL
+        run: echo "Documentation was deployed to subdirectory ${{ env.TAG }}"

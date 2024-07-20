@@ -11,9 +11,7 @@ class TestControllerRun:
     """Class containing the unit tests for the controller module."""
 
     def test_run_no_proj_info(self) -> None:
-        """
-        Test for when the project information is missing from the input JSON.
-        """
+        """Test for when the project information is missing from the input JSON."""
         # make an input JSON with no project information
         input_json = {}
 
@@ -54,8 +52,7 @@ class TestControllerRun:
         )
     ])
     def test_run_missing_info(self, input_json: dict, return_value: dict) -> None:
-        """
-        Test for when a required field within the project information is missing from the input JSON.
+        """Test for when a required field within the project information is missing from the input JSON.
 
         Args:
             input_json (dict): The input json to run the controller with
@@ -70,9 +67,7 @@ class TestControllerRun:
 
     @mock.patch('controller.Controller.get_github_data', new=mock.Mock(return_value={"gh": "mock"}))
     def test_run_gh(self) -> None:
-        """
-        Test for when we only request GitHub data.
-        """
+        """ Test for when we only request GitHub data from the Controller."""
 
         # make an input JSON with only requesting GitHub data
         input_json = {
@@ -94,9 +89,7 @@ class TestControllerRun:
 
     @mock.patch('controller.Controller.get_libraries_data', new=mock.Mock(return_value={"lb": "mock"}))
     def test_run_lib(self) -> None:
-        """
-        Test for when we only request Libraries.io data.
-        """
+        """Test for when we only request Libraries.io data from the Controller."""
 
         # make an input JSON with only requesting Libraries.io data
         input_json = {
@@ -118,9 +111,7 @@ class TestControllerRun:
 
     @mock.patch('controller.Controller.get_cve_data', new=mock.Mock(return_value={"cve": "mock"}))
     def test_run_cve(self) -> None:
-        """
-        Test for when we only request CVE data.
-        """
+        """Test for when we only request CVE data from the Controller."""
 
         # make an input JSON with only requesting CVE data
         input_json = {
@@ -142,9 +133,7 @@ class TestControllerRun:
 
     @mock.patch('controller.Controller.get_so_data', new=mock.Mock(return_value={"so": "mock"}))
     def test_run_so(self) -> None:
-        """
-        Test for when we only request Stack Overflow data.
-        """
+        """Test for when we only request Stack Overflow data from the Controller."""
 
         # make an input JSON with only requesting Stack Overflow data
         input_json = {
@@ -166,9 +155,7 @@ class TestControllerRun:
 
     @mock.patch('controller.Controller.get_virus_data', new=mock.Mock(return_value={"virus": "mock"}))
     def test_run_virus(self) -> None:
-        """
-        Test for when we only request virus scan data.
-        """
+        """Test for when we only request virus scan data from the Controller."""
 
         # make an input JSON with only requesting virus scan data
         input_json = {
@@ -207,9 +194,7 @@ class TestControllerData:
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_open_issue_count', new=mock.Mock(return_value=3))
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_user_count', new=mock.Mock(return_value=20))
     def test_get_github_data(self) -> None:
-        """
-        Test for when we only request Github data.
-        """
+        """Test for making sure that the GitHub data-requests are made correctly."""
 
         # Set the required inputs
         owner = "numpy"
@@ -265,9 +250,7 @@ class TestControllerData:
     @mock.patch('src.libraries_io.libraries_io_api_calls.LibrariesAPICall.get_release_frequency', new=mock.Mock(return_value=1))
     @mock.patch('src.libraries_io.libraries_io_api_calls.LibrariesAPICall.get_sourcerank', new=mock.Mock(return_value=5))
     def test_get_libraries_data(self) -> None:
-        """
-        Test for the get_libraries_data function.
-        """
+        """Test for making sure that the Libraries.io data-requests are made correctly."""
 
         # Set the required inputs
         platform = "Pypi"
@@ -310,9 +293,8 @@ class TestControllerData:
     @mock.patch('src.cve.cve_spider.CVESpider.get_all_cve_data', new=mock.Mock(return_value=[1, 2, 3, 4]))
     @mock.patch('src.cve.cve_spider.CVESpider.get_cve_vulnerability_count', new=mock.Mock(return_value=1))
     def test_get_cve_data(self) -> None:
-        """
-        Test for the get_cve_data function.
-        """
+        """Test for making sure that the CVE data-requests are made correctly."""
+
         # Set the required inputs
         repo_name = 'numpy'
         # Set the wanted data to all of the CVE data points
@@ -336,11 +318,10 @@ class TestControllerData:
         }
 
     # Mock all of the Stack Overflow spider functions
-    @mock.patch('src.stackoverflow.stackoverflow_spider.StackOverflowSpider.get_monthly_popularity', new=mock.Mock(return_value={"month": 0, "year": 1, "popularity": 2}))
+    @mock.patch('src.stackoverflow.stackoverflow_api_calls.StackOverflowAPICall.get_monthly_popularity', new=mock.Mock(return_value={"month": 0, "year": 1, "popularity": 2}))
     def test_get_so_data(self) -> None:
-        """
-        Test for the get_so_data function.
-        """
+        """Test for making sure that the Stack Overflow data-requests are made correctly."""
+
         # Set the required inputs
         repo_name = 'numpy'
         # Set the wanted data to all of the Stack Overflow data points
@@ -367,9 +348,7 @@ class TestControllerData:
     @mock.patch('src.clamav.clamav_scanner.ClamAVScanner.get_virus_ratio', new=mock.Mock(return_value=0.0))
     @mock.patch('src.github.github_api_calls.GitHubAPICall.get_release_download_links', new=mock.Mock(return_value=['']))
     def test_get_virus_data(self) -> None:
-        """
-        Test for the get_virus_data function.
-        """
+        """Test for making sure that the virus data-requests are made correctly."""
 
         # Set the required inputs
         owner = 'numpy'
@@ -377,7 +356,7 @@ class TestControllerData:
         release = 'v1.22.1'
         # Set the wanted data to all of the virus scan data points
         wanted_data = [
-            'virus_ratio',
+            'vs_virus_ratio',
             'unknown'
         ]
 
@@ -387,7 +366,7 @@ class TestControllerData:
         # Assert that the returned dictionary only contains the virus ratio
         # and that the value of that ratio is equal to the one we specified
         assert result == {
-            'virus_ratio': 0.0,
+            'vs_virus_ratio': 0.0,
             'unknown': None,
         }
 

@@ -16,18 +16,17 @@ spider = GitHubSpider()
 
 
 class TestUserCount:
-    """
-    Test the get_repository_user_count function.
+    """Class containing the tests for the get_repository_user_count function.
 
     We will test the following scenario's:
-    1. The get request failed
-        - The response code is not 200
-        - The response body is empty
-    2. The get request succeeded but the number of users is not found
-        - The response body is empty
-        - The 'used by' <a> tag is not found
-        - The 'used by' <a> tag has no 'title' attribute
-    3. The get request succeeded and the number of users is found
+    1. The get request failed:
+        - The response code is not 200.
+        - The response body is empty.
+    2. The get request succeeded but the number of users is not found:
+        - The response body is empty.
+        - The 'used by' <a> tag is not found.
+        - The 'used by' <a> tag has no 'title' attribute.
+    3. The get request succeeded and the number of users is found.
     """
 
     owner = 'numpy'
@@ -36,9 +35,11 @@ class TestUserCount:
 
     @ responses.activate
     def test_invalid_response_code(self) -> None:
+        """Test for when the request returns an invalid response.
+
+        i.e. a response with a code other than 200.
         """
-        Test for when the request returns an invalid response, i.e. a response with a code other than 200
-        """
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_users()
 
@@ -53,9 +54,8 @@ class TestUserCount:
 
     @ responses.activate
     def test_empty_response_body(self) -> None:
-        """
-        Test for when the request body is empty
-        """
+        """Test for when the request body is empty."""
+
         # Tell responses to mock the request for us using the provided body and code
         responses.add(responses.GET, self.url, body='', status=200)
 
@@ -67,9 +67,8 @@ class TestUserCount:
 
     @ responses.activate
     def test_user_count_tag_not_found(self) -> None:
-        """
-        Test for when the request body is not empty but the 'used by' <a> tag can not be found
-        """
+        """Test for when the request body is not empty but the 'used by' <a> tag can not be found."""
+
         # Get the mock response body
         no_tag_body = FileIOForGHSpiderTests.get_no_tag_body_users()
 
@@ -84,9 +83,8 @@ class TestUserCount:
 
     @ responses.activate
     def test_no_title_attribute(self) -> None:
-        """
-        Test for when the request body is not empty, and the 'used by' <a> tag is found, but the tag does not have a 'title' attribute
-        """
+        """Test for when the request body is not empty, and the 'used by' <a> tag is found, but the tag does not have a 'title' attribute."""
+
         # Get the mock response body
         no_title_body = FileIOForGHSpiderTests.get_no_title_body_users()
 
@@ -101,9 +99,8 @@ class TestUserCount:
 
     @ responses.activate
     def test_user_count_found(self) -> None:
-        """
-        Test for when the request body is not empty, and the 'used by' <a> tag is found, and the tag has a 'title' attribute
-        """
+        """Test for when the request body is not empty, and the 'used by' <a> tag is found, and the tag has a 'title' attribute."""
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_users()
 
@@ -118,15 +115,14 @@ class TestUserCount:
 
 
 class TestOpenIssues:
-    """
-    Test the get_repository_open_issue_count function.
+    """Class containing the tests for the get_repository_open_issue_count function.
 
     We will test the following scenario's:
-    1. The get request failed
-        - The response code is not 200
-        - The response body is empty
-    2. The get request succeeded but the open issue count is not found
-    3. The get request succeeded and the open issue count is found
+    1. The get request failed:
+        - The response code is not 200.
+        - The response body is empty.
+    2. The get request succeeded but the open issue count is not found.
+    3. The get request succeeded and the open issue count is found.
     """
 
     owner = 'numpy'
@@ -135,9 +131,11 @@ class TestOpenIssues:
 
     @ responses.activate
     def test_invalid_response_code(self) -> None:
+        """Test for when the request returns an invalid response.
+
+        i.e. a response with a code other than 200.
         """
-        Test for when the request returns an invalid response, i.e. a response with a code other than 200
-        """
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_issues()
 
@@ -152,9 +150,8 @@ class TestOpenIssues:
 
     @ responses.activate
     def test_empty_response_body(self) -> None:
-        """
-        Test for when the request body is empty
-        """
+        """Test for when the request body is empty."""
+
         # Tell responses to mock the request for us using the provided body and code
         responses.add(responses.GET, self.url, body='', status=200)
 
@@ -166,9 +163,8 @@ class TestOpenIssues:
 
     @ responses.activate
     def test_no_open_issues(self) -> None:
-        """
-        Test for when the request body is not empty, but the open issue count can not be found
-        """
+        """Test for when the request body is not empty, but the open issue count can not be found."""
+
         # Get the mock response body
         no_open_body = FileIOForGHSpiderTests.get_no_open_body_issues()
 
@@ -183,9 +179,8 @@ class TestOpenIssues:
 
     @responses.activate
     def test_open_issue_count_found(self) -> None:
-        """
-        Test for when the request body is not empty, and the open issue count is found
-        """
+        """Test for when the request body is not empty, and the open issue count is found."""
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_issues()
 
@@ -200,15 +195,14 @@ class TestOpenIssues:
 
 
 class TestClosedIssues:
-    """
-    Test the get_repository_closed_issue_count function.
+    """Class containing the tests for the get_repository_closed_issue_count function.
 
     We will test the following scenario's:
-    1. The get request failed
-        - The response code is not 200
-        - The response body is empty
-    2. The get request succeeded but the closed issue count is not found
-    3. The get request succeeded and the closed issue count is found
+    1. The get request failed:
+        - The response code is not 200.
+        - The response body is empty.
+    2. The get request succeeded but the closed issue count is not found.
+    3. The get request succeeded and the closed issue count is found.
     """
 
     owner = 'numpy'
@@ -217,9 +211,11 @@ class TestClosedIssues:
 
     @ responses.activate
     def test_invalid_response_code(self) -> None:
+        """Test for when the request returns an invalid response.
+
+        i.e. a response with a code other than 200.
         """
-        Test for when the request returns an invalid response, i.e. a response with a code other than 200
-        """
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_issues()
 
@@ -235,9 +231,8 @@ class TestClosedIssues:
 
     @ responses.activate
     def test_empty_response_body(self) -> None:
-        """
-        Test for when the request body is empty
-        """
+        """Test for when the request body is empty."""
+
         # Tell responses to mock the request for us using the provided body and code
         responses.add(responses.GET, self.url, body='', status=200)
 
@@ -250,9 +245,8 @@ class TestClosedIssues:
 
     @ responses.activate
     def test_no_closed_issues(self) -> None:
-        """
-        Test for when the request body is not empty, but the closed issue count can not be found
-        """
+        """Test for when the request body is not empty, but the closed issue count can not be found."""
+
         # Get the mock response body
         no_closed_body = FileIOForGHSpiderTests.get_no_closed_body_issues()
 
@@ -268,9 +262,8 @@ class TestClosedIssues:
 
     @responses.activate
     def test_closed_issue_count_found(self) -> None:
-        """
-        Test for when the request body is not empty, and the closed issue count is found
-        """
+        """Test for when the request body is not empty, and the closed issue count is found."""
+
         # Get the mock response body
         regular_body = FileIOForGHSpiderTests.get_regular_body_issues()
 
@@ -286,14 +279,13 @@ class TestClosedIssues:
 
 
 class TestIssueRatio:
-    """
-    Test the get_repository_issue_ratio function.
+    """Class containing the tests for the get_repository_issue_ratio function.
 
     We will test the following scenario's:
-    1. Both open and closed issue counts are valid numbers
-    2. The open issue count is None
-    3. The closed issue count is None
-    4. Both open and closed issue counts are None
+    1. Both open and closed issue counts are valid numbers.
+    2. The open issue count is None.
+    3. The closed issue count is None.
+    4. Both open and closed issue counts are None.
     """
 
     owner = 'numpy'
@@ -303,9 +295,8 @@ class TestIssueRatio:
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_open_issue_count', new=mock.Mock(return_value=2026))
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_closed_issue_count', new=mock.Mock(return_value=8387))
     def test_both_successful(self) -> None:
-        """
-        Test for when both the open and closed issue counts are valid numbers
-        """
+        """Test for when both the open and closed issue counts are valid numbers."""
+
         result = spider.get_repository_issue_ratio(self.owner, self.repo)
 
         # The result should be the issue ratio
@@ -314,9 +305,8 @@ class TestIssueRatio:
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_open_issue_count', new=mock.Mock(return_value=2026))
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_closed_issue_count', new=mock.Mock(return_value=None))
     def test_open_successful_close_failed(self) -> None:
-        """
-        Test for when the closed issue count is not a valid number
-        """
+        """Test for when the closed issue count is not a valid number."""
+
         result = spider.get_repository_issue_ratio(self.owner, self.repo)
 
         assert result is None
@@ -324,9 +314,8 @@ class TestIssueRatio:
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_open_issue_count', new=mock.Mock(return_value=None))
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_closed_issue_count', new=mock.Mock(return_value=8387))
     def test_open_failed_closed_successful(self) -> None:
-        """
-        Test for when the closed issue count is not a valid number
-        """
+        """Test for when the closed issue count is not a valid number."""
+
         result = spider.get_repository_issue_ratio(self.owner, self.repo)
 
         assert result is None
@@ -334,9 +323,8 @@ class TestIssueRatio:
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_open_issue_count', new=mock.Mock(return_value=None))
     @mock.patch('src.github.github_spider.GitHubSpider.get_repository_closed_issue_count', new=mock.Mock(return_value=None))
     def test_both_failed(self) -> None:
-        """
-        Test for when both the open and closed issue counts are not valid numbers
-        """
+        """Test for when both the open and closed issue counts are not valid numbers."""
+
         result = spider.get_repository_issue_ratio(self.owner, self.repo)
 
         assert result is None

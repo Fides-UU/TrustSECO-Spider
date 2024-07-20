@@ -2,12 +2,11 @@
 
 
 class FileIOForGHSpiderTests:
-    """Class that contains all of the IO functions for the spider tests."""
+    """Class containing all of the IO functions for the spider tests."""
 
     # Test users
     def get_regular_body_users() -> str:
-        """
-        Get the regular page for the GitHub users tests.
+        """Gets the regular page for the GitHub users tests.
 
         Returns:
             str: The regular page for the GitHub users tests.
@@ -17,8 +16,7 @@ class FileIOForGHSpiderTests:
             return regular.read()
 
     def get_no_tag_body_users() -> str:
-        """
-        Get the no-tag page for the GitHub users tests.
+        """Gets the no-tag page for the GitHub users tests.
 
         Returns:
             str: The no-tag page for the GitHub users tests.
@@ -28,8 +26,7 @@ class FileIOForGHSpiderTests:
             return no_tag.read()
 
     def get_no_title_body_users() -> str:
-        """
-        Get the no-title page for the GitHub users tests.
+        """Gets the no-title page for the GitHub users tests.
 
         Returns:
             str: The no-title page for the GitHub users tests.
@@ -40,8 +37,7 @@ class FileIOForGHSpiderTests:
 
     # Test issues
     def get_regular_body_issues() -> str:
-        """
-        Get the regular page for the GitHub issues tests.
+        """Gets the regular page for the GitHub issues tests.
 
         Returns:
             str: The regular page for the GitHub issues tests.
@@ -51,8 +47,7 @@ class FileIOForGHSpiderTests:
             return regular.read()
 
     def get_no_open_body_issues() -> str:
-        """
-        Get the no-open issues page for the GitHub issues tests.
+        """Gets the no-open issues page for the GitHub issues tests.
 
         Returns:
             str: The no-open issues page for the GitHub issues tests.
@@ -62,8 +57,7 @@ class FileIOForGHSpiderTests:
             return no_open.read()
 
     def get_zero_open_body_issues() -> str:
-        """
-        Get the zero-open issues page for the GitHub issues tests.
+        """Gets the zero-open issues page for the GitHub issues tests.
 
         Returns:
             str: The zero-open issues page for the GitHub issues tests.
@@ -73,8 +67,7 @@ class FileIOForGHSpiderTests:
             return zero_open.read()
 
     def get_no_closed_body_issues() -> str:
-        """
-        Get the no-closed issues page for the GitHub issues tests.
+        """Gets the no-closed issues page for the GitHub issues tests.
 
         Returns:
             str: The no-closed issues page for the GitHub issues tests.
@@ -84,8 +77,7 @@ class FileIOForGHSpiderTests:
             return no_closed.read()
 
     def get_zero_closed_body_issues() -> str:
-        """
-        Get the zero-closed issues page for the GitHub issues tests.
+        """Gets the zero-closed issues page for the GitHub issues tests.
 
         Returns:
             str: The zero-closed issues page for the GitHub issues tests.
@@ -96,11 +88,10 @@ class FileIOForGHSpiderTests:
 
 
 class FileIOForCVETests:
-    """Class that contains all of the IO functions for the CVE tests."""
+    """Class containing all of the IO functions for the CVE tests."""
 
     def get_regular_page_extract() -> str:
-        """
-        Get the regular page for the CVE extract tests.
+        """Gets the regular page for the CVE extract tests.
 
         Returns:
             str: The html page
@@ -110,8 +101,7 @@ class FileIOForCVETests:
             return regular.read()
 
     def get_no_version_page_extract() -> str:
-        """
-        Get the page with no version data for the CVE extract tests.
+        """Gets the page with no version data for the CVE extract tests.
 
         Returns:
             str: The html page
@@ -121,8 +111,7 @@ class FileIOForCVETests:
             return no_version.read()
 
     def get_no_score_page_extract() -> str:
-        """
-        Get the page with no score data for the CVE extract tests.
+        """Gets the page with no score data for the CVE extract tests.
 
         Returns:
             str: The html page
@@ -131,8 +120,7 @@ class FileIOForCVETests:
             return no_score.read()
 
     def get_incorrect_version_page_extract() -> str:
-        """
-        Get the page with incorrect version data for the CVE extract tests.
+        """Gets the page with incorrect version data for the CVE extract tests.
 
         Returns:
             str: The html page
@@ -142,8 +130,7 @@ class FileIOForCVETests:
             return incorrect_version.read()
 
     def get_regular_page_get_codes() -> str:
-        """
-        Get the regular page for the CVE get_codes tests.
+        """Gets the regular page for the CVE get_codes tests.
 
         Returns:
             str: The html page
@@ -153,8 +140,7 @@ class FileIOForCVETests:
             return regular.read()
 
     def get_no_tables_page_get_codes() -> str:
-        """
-        Get the page with no tables for the CVE get_codes tests.
+        """Gets the page with no tables for the CVE get_codes tests.
 
         Returns:
             str: The html page
@@ -164,8 +150,7 @@ class FileIOForCVETests:
             return no_tables.read()
 
     def get_no_links_page_get_codes() -> str:
-        """
-        Get the page with no links for the CVE get_codes tests.
+        """Gets the page with no links for the CVE get_codes tests.
 
         Returns:
             str: The html page
@@ -175,8 +160,7 @@ class FileIOForCVETests:
             return no_links.read()
 
     def get_missing_table_page_get_codes() -> str:
-        """
-        Get the page with a missing table for the CVE get_codes tests.
+        """Gets the page with a missing table for the CVE get_codes tests.
 
         Returns:
             str: The html page

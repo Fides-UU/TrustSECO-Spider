@@ -1,13 +1,11 @@
 """File containing the GitHub spider
 
-This file contains the logic for the spider that will
-allow the program to use BeautifulSoup and Requests
-in order to scrape wanted data-points from the GitHub website.
+This file contains the logic for crawling through the [GitHub website](https://github.com/).
 
-    Typical usage:
+This crawling is done by using the [Requests](https://requests.readthedocs.io/en/latest/) library for HTTP calls,
+and the [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) library for HTML parsing.
 
-    foo = GitHubSpider()
-    bar = foo.get_repository_user_count('owner', 'repo')
+Only the data-points that the API endpoints cannot provide are spidered.
 """
 
 # Import for sending and handling HTTP requests
@@ -17,22 +15,20 @@ from bs4 import BeautifulSoup
 
 
 class GitHubSpider:
-    """Class methods for getting data from the GitHub website
-
-    This class handles all of the spidering jobs for the GitHub website.
-    It uses requests to get the webpage, and BeautifulSoup to parse and traverse it.
-    """
+    """Class containing the GitHub spider"""
 
     def get_repository_user_count(self, owner: str, repo: str) -> int:
-        """
-        Get the number of users of a given repository
+        """Function to get the number of users of a given repository.
+
+        To do this we simply look through the repository page and find
+        the "used by" section.
 
         Args:
-            owner (str): The owner of the repository
-            repo (str): The repository
+            owner (str): The owner of the repository.
+            repo (str): The repository.
 
         Returns:
-            int: The number of users of the repository
+            int: The number of users of the repository.
         """
 
         # Create the URL for the repository
@@ -50,7 +46,7 @@ class GitHubSpider:
 
         # Get the <a> tags that might contain our number
         possible_links = soup.find_all(
-            'a', class_='Link--primary no-underline')
+            'a', class_='Link--primary no-underline Link')
 
         # Initialise the counter to None
         user_count = None
@@ -70,15 +66,14 @@ class GitHubSpider:
         return user_count
 
     def get_repository_open_issue_count(self, owner: str, repo: str) -> int:
-        """
-        Get the amount of open issues of a given repository
+        """Function to get the amount of open issues of a given repository.
 
         Args:
-            owner (str): The owner of the repository
-            repo (str): The repository
+            owner (str): The owner of the repository.
+            repo (str): The repository.
 
         Returns:
-            int: The number of open issues of the repository
+            int: The number of open issues of the repository.
         """
 
         # Create the URL for the repository
@@ -114,15 +109,14 @@ class GitHubSpider:
         return None
 
     def get_repository_closed_issue_count(self, owner: str, repo: str) -> int:
-        """
-        Get the amount of closed issues of a given repository
+        """Function to get the amount of closed issues of a given repository.
 
         Args:
-            owner (str): The owner of the repository
-            repo (str): The repository
+            owner (str): The owner of the repository.
+            repo (str): The repository.
 
         Returns:
-            int: The number of closed issues of the repository
+            int: The number of closed issues of the repository.
         """
 
         # Create the URL for the repository
@@ -158,15 +152,14 @@ class GitHubSpider:
         return None
 
     def get_repository_issue_ratio(self, owner: str, repo: str) -> float:
-        """
-        Get the issue ratio of a given repository
+        """Function to get the issue ratio of a given repository.
 
         Args:
-            owner (str): The owner of the repository
-            repo (str): The repository
+            owner (str): The owner of the repository.
+            repo (str): The repository.
 
         Returns:
-            float: The issue ratio of the repository
+            float: The issue ratio of the repository.
         """
 
         # Get the issue counts

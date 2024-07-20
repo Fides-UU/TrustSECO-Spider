@@ -1,12 +1,11 @@
 """File containing the Controller of the TrustSECO-Spider
 
+The Controller class contains the logic used to run the spider.
+This entails parsing the JSON input, delegating the work to the
+various sub-modules, and returning the result as an HTTP response.
 
-This file contains the Controller class, which contains the logic used to run the spider.
-It also contains some static methods that an outside program/end-user can use to get data from the TrustSECO-Spider.
-
-    Typical usage:
-
-    foo = get_data('input_json')
+It also contains some static methods that the Flask app uses to
+communicate with the controller.
 """
 
 # Imports for environmental variables
@@ -19,10 +18,10 @@ import logging
 # API calls
 from src.github.github_api_calls import GitHubAPICall
 from src.libraries_io.libraries_io_api_calls import LibrariesAPICall
+from src.stackoverflow.stackoverflow_api_calls import StackOverflowAPICall
 # Spiders
 from src.github.github_spider import GitHubSpider
 from src.cve.cve_spider import CVESpider
-from src.stackoverflow.stackoverflow_spider import StackOverflowSpider
 # Virus scanning
 from src.clamav.clamav_scanner import ClamAVScanner
 
@@ -35,15 +34,16 @@ from typing import List
 class Controller:
     """Class methods for controlling the TrustSECO-Spider
 
-    This class receives an JSON object as input, and will return an JSON object as output.
+    The only outside-used method is the `run` method. This method
+    receives an JSON object as input, and will return an JSON object as output.
     The output JSON object will contain the data as requested by the input JSON object.
 
     Attributes:
-        gh_api (GitHubAPICall): The GitHub API object
-        lib_api (LibrariesAPICall): The Libraries.IO API object
-        gh_spider (GitHubSpider): The GitHub spider object
-        cve_spider (CVESpider): The CVE spider object
-        so_spider (StackOverflowSpider): The StackOverflow spider object
+        gh_api (GitHubAPICall): The GitHub API object.
+        lib_api (LibrariesAPICall): The Libraries.IO API object.
+        gh_spider (GitHubSpider): The GitHub spider object.
+        cve_spider (CVESpider): The CVE spider object.
+        so_spider (StackOverflowSpider): The StackOverflow spider object.
     """
 
     def __init__(self) -> None:
@@ -55,27 +55,25 @@ class Controller:
         # Spider objects
         self.gh_spider = GitHubSpider()
         self.cve_spider = CVESpider()
-        self.so_spider = StackOverflowSpider()
+        self.so_spider = StackOverflowAPICall()
 
         # Virus scanner objects
         self.vs_comm = ClamAVScanner()
 
     def run(self, input_json: dict) -> dict:
-        """
-        This is the main looping function of the program.
+        """Allows data-requests to be made to the controller
 
-        It will try to read the console to see if a new command has been received.
+        This is the main function of the TrustSECO-Spider. It receives
+        a JSON object as input, and will return a JSON object as output.
+        This output JSON object will contain the data as requested by the input JSON object.
+        This data is gathered by delegating the work to the various sub-modules.
 
         Args:
-            input_json (dict): The input JSON object
-
-            This input JSON object contains information about which package is to be spidered,
-            and what data is to be returned.
+            input_json (dict): The input JSON object. 
+                This input JSON object contains information about which package is to be spidered, and what data is to be returned.
 
         Returns:
-            dict: The output JSON object
-
-            This output JSON object contains the data as requested by the input JSON object.
+            dict: The output JSON object. This output JSON object contains the data as requested by the input JSON object.
         """
 
         # Make sure we got the information we need
@@ -171,8 +169,10 @@ class Controller:
         return output_json
 
     def get_github_data(self, owner: str, repo_name: str, release: str, wanted_data: List[str]) -> dict:
-        """
-        Get the data from GitHub.
+        """Calls on the GitHub spider and API caller to get the data requested.
+
+        Loops through the given `wanted_data` list, and sends the appropriate
+        data-requests to the GitHub spider and API caller.
 
         Args:
             owner (str): The owner of the repository.
@@ -254,8 +254,10 @@ class Controller:
         return return_data
 
     def get_libraries_data(self, platform: str, owner: str, repo_name: str, release: str, wanted_data: List[str]) -> dict:
-        """
-        Get the data from Libraries.IO.
+        """Calls on the Libraries.io API caller to get the data requested.
+
+        Loops through the given `wanted_data` list, and sends the appropriate
+        data-requests to the Libraries.io API caller.
 
         Args:
             platform (str): The platform of the repository
@@ -320,8 +322,10 @@ class Controller:
         return return_data
 
     def get_cve_data(self, repo_name: str, wanted_data: List[str]) -> dict:
-        """
-        Get the data from CVE website.
+        """Calls on the CVE spider to get the data requested.
+
+        Loops through the given `wanted_data` list, and sends the appropriate
+        data-requests to the CVE spider.
 
         Args:
             repo_name (str): The name of the repository
@@ -360,8 +364,10 @@ class Controller:
         return return_data
 
     def get_so_data(self, repo_name: str, wanted_data: List[str]) -> dict:
-        """
-        Get the data from Stack Overflow.
+        """Calls on the Stack Overflow spider to get the data requested.
+
+        Loops through the given `wanted_data` list, and sends the appropriate
+        data-requests to the Stack Overflow spider.
 
         Args:
             repo_name (str): The name of the repository
@@ -395,8 +401,14 @@ class Controller:
         return return_data
 
     def get_virus_data(self, owner: str, repo_name: str, release: str, wanted_data: List[str]) -> dict:
-        """
-        Get the virus data from the ClamAV container.
+        """Calls on the ClamAV virus scanning container to get the data requested.
+
+        Loops through the given `wanted_data` list, and sends the appropriate
+        data-requests to the ClamAV container.
+
+        Requires the TrustSECO-Spider to be running in Docker, alongside
+        the ClamAV container. The TrustSECO-Spider and the ClamAV container 
+        should be run at the same time using the docker-compose.yml file.
 
         Args:
             owner (str): The owner of the repository
@@ -421,7 +433,7 @@ class Controller:
             # Initialise the value variable
             value = None
 
-            if data_point == 'virus_ratio':
+            if data_point == 'vs_virus_ratio':
                 value = self.vs_comm.get_virus_ratio(
                     download_links
                 )
@@ -438,8 +450,7 @@ class Controller:
 
 
 def get_data(input_json: dict) -> dict:
-    """
-    This function will run the controller with the given JSON input
+    """Function to activate the Controller, and pass on the wanted data-points.
 
     Args:
         input_json (dict): The received JSON input
@@ -456,8 +467,7 @@ def get_data(input_json: dict) -> dict:
 
 
 def update_token_gh(github_token: str) -> None:
-    """
-    This function will update the environmental variables with the given GitHub token
+    """Updates the .env file with the given GitHub token.
 
     Args:
         github_token (str): The user's GitHub token
@@ -473,8 +483,7 @@ def update_token_gh(github_token: str) -> None:
 
 
 def update_token_lib(libraries_token: str) -> None:
-    """
-    This function will update the environmental variable with the given Libraries.io token
+    """Updates the .env file with the given Libraries.io token.
 
     Args:
         libraries_token (str): The user's Libraries.io token
@@ -490,8 +499,7 @@ def update_token_lib(libraries_token: str) -> None:
 
 
 def get_tokens() -> dict:
-    """
-    This functions read the environmental variables and returns the tokens currently contained within
+    """Returns the GitHub and Libraries.io tokens from the .env file.
 
     Returns:
         dict: The current GitHub and Libraries.io tokens

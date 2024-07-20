@@ -15,18 +15,17 @@ from tests.unit_tests.spider_tests.file_io import FileIOForCVETests
 
 
 class TestVulnerabilityCount:
-    """Class for testing the get_cve_vulnerability_count function.
+    """Class containing the tests for the get_cve_vulnerability_count function.
 
     We will test for the following possible return values of get_cve_codes:
-    1. None
-    2. Empty list
-    3. Non-empty list
+    1. None.
+    2. Empty list.
+    3. Non-empty list.
     """
 
     @pytest.mark.parametrize('return_value, expected_value', [(None, None), ([], 0), (['CVE-2019-1234', 'CVE-2019-1235'], 2)])
     def test_all(self, return_value: List[str], expected_value: int) -> None:
-        """
-        Tests all of the possible scenarios using mocking to change the output of the get_cve_codes function.
+        """Test for all of the possible scenarios, using mocking to change the output of the get_cve_codes function.
 
         Args:
             return_value (List[str]): The value that the get_cve_codes function will return.
@@ -44,23 +43,22 @@ class TestVulnerabilityCount:
 
 
 class TestGetAllCVEData:
-    """Class for testing the get_all_cve_data function.
+    """Class containing all the tests for the get_all_cve_data function.
 
     We will test for the following possible return values of get_cve_codes:
-    1. None
-    2. Empty list
-    3. Non-empty list
+    1. None.
+    2. Empty list.
+    3. Non-empty list.
 
     We will also test for the following possible return values of extract_cve_data:
-    1. None
-    2. Actual object
+    1. None.
+    2. Actual object.
     """
 
     @pytest.mark.parametrize('get_cve_codes_rv', [None, [], ['CVE-2019-1234', 'CVE-2019-1235']])
     @pytest.mark.parametrize('extract_cve_data_rv', [None, {'test_key': 'test_value'}])
     def test_all(self, get_cve_codes_rv: List[str], extract_cve_data_rv: dict) -> None:
-        """
-        Tests all of the possible scenarios using mocking to change the output of the get_cve_codes and extract_cve_data functions.
+        """Test for all of the possible scenarios, using mocking to change the output of the get_cve_codes and extract_cve_data functions.
 
         Args:
             get_cve_codes_rv (List[str]): The value that the get_cve_codes function will return.
@@ -97,19 +95,19 @@ class TestGetAllCVEData:
 
 
 class TestExtractData:
-    """Class for testing the extract_cve_data function.
+    """Class containing all the tests for the extract_cve_data function.
 
     We will test the following scenarios:
     The html contains:
-    1. Nothing
-    2. Only the score
-    3. Only the affected versions
-    4. Only a broken affected versions object
-    5. Everything
+    1. Nothing.
+    2. Only the score.
+    3. Only the affected versions.
+    4. Only a broken affected versions object.
+    5. Everything.
     """
 
     def test_empty_page(self) -> None:
-        """Tests the scenario where the html page is empty."""
+        """Test for the scenario where the html page is empty."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -123,7 +121,7 @@ class TestExtractData:
             assert result is None
 
     def test_no_version_page(self) -> None:
-        """Tests the scenario where the html page contains only the score."""
+        """Test for the scenario where the html page contains only the score."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -151,7 +149,7 @@ class TestExtractData:
             assert result == expected_cve_data
 
     def test_incorrect_version_page(self) -> None:
-        """Tests the scenario where the html page contains a version object, but with missing information."""
+        """Test for the scenario where the html page contains a version object, but with missing information."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -179,7 +177,7 @@ class TestExtractData:
             assert result == expected_cve_data
 
     def test_no_score_page(self) -> None:
-        """Tests the scenario where the html page contains only the vulnerable versions."""
+        """Test for the scenario where the html page contains only the vulnerable versions."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -207,7 +205,7 @@ class TestExtractData:
             assert result == expected_cve_data
 
     def test_regular_page(self) -> None:
-        """Tests the scenario where the html page contains all the wanted information."""
+        """Test for the scenario where the html page contains all the wanted information."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -236,18 +234,17 @@ class TestExtractData:
 
 
 class TestGetParseWebsite:
-    """Class for testing the get_and_parse_webpage function
+    """Class containing all the tests for the get_and_parse_webpage function
 
     To test this function, we will test the following scenarios:
-    1. Invalid url
-    2. Invalid return code
-    3. Valid request
+    1. Invalid url.
+    2. Invalid return code.
+    3. Valid request.
     """
 
     @pytest.mark.parametrize('given_url', [None, '', 'test_url', 'google.com'])
     def test_invalid_url(self, given_url: str) -> None:
-        """
-        Tests the scenario where the url is invalid.
+        """Test for the scenario where the url is invalid.
 
         Args:
             given_url (str): The url to test
@@ -265,7 +262,7 @@ class TestGetParseWebsite:
 
     @ responses.activate
     def test_invalid_return_code(self) -> None:
-        """Tests the scenario where the return code is invalid."""
+        """Test for the scenario where the return code is invalid."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -283,7 +280,7 @@ class TestGetParseWebsite:
 
     @ responses.activate
     def test_valid_request(self) -> None:
-        """Tests the scenario where the html is invalid."""
+        """Test for the scenario where the html is invalid."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -302,18 +299,18 @@ class TestGetParseWebsite:
 
 
 class TestGetCVECodes:
-    """Class for testing the get_cve_codes function
+    """Class containing all the tests for the get_cve_codes function
 
     We will be testing for the following scenarios:
-    1. The returned soup is None
-    2. There are no table tags
-    3. The wanted table tag does not exist
-    4. There are no links in the table
-    5. Valid site
+    1. The returned soup is None.
+    2. There are no table tags.
+    3. The wanted table tag does not exist.
+    4. There are no links in the table.
+    5. Valid site.
     """
 
     def test_soup_is_none(self) -> None:
-        """Tests the scenario where the soup is None."""
+        """Test for the scenario where the soup is None."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -326,7 +323,7 @@ class TestGetCVECodes:
             assert result is None
 
     def test_no_tables(self) -> None:
-        """Tests the scenario where there are no table tags."""
+        """Test for the scenario where there are no table tags."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -344,7 +341,7 @@ class TestGetCVECodes:
             assert result is None
 
     def test_missing_table(self) -> None:
-        """Tests the scenario where the wanted table tag does not exist."""
+        """Test for the scenario where the wanted table tag does not exist."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -362,7 +359,7 @@ class TestGetCVECodes:
             assert result is None
 
     def test_no_links(self) -> None:
-        """Tests the scenario where there are no link tags within the table."""
+        """Test for the scenario where there are no link tags within the table."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()
@@ -380,7 +377,7 @@ class TestGetCVECodes:
             assert result == []
 
     def test_valid_page(self) -> None:
-        """Tests the scenario where the received html page is completely valid."""
+        """Test for the scenario where the received html page is completely valid."""
 
         # Initialise the CVESpider object
         cve_spider = CVESpider()

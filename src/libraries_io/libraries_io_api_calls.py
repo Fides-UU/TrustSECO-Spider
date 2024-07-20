@@ -1,11 +1,9 @@
-"""File containing the Libraries.io API class.
+"""File for processing GitHub data-point requests.
 
-This file contains all of the logic pertaining to making actual API calls to Libraries.io.
-
-    Typical usage:
-
-    foo = LibrariesIO()
-    bar = libraries_io.get_release_frequency('platform', 'name')
+This file contains all of the logic for processing Libraries.io data-point requests.
+In order to do this, it contains a few functions that return most of the wanted data-points:
+`LibrariesAPICall.get_project_repository`, `LibrariesAPICall.get_project_dependencies` and 
+`LibrariesAPICall.get_project_information`.
 """
 
 # Import for improved logging
@@ -26,15 +24,18 @@ class LibrariesAPICall:
     """
 
     def get_release_frequency(self, platform: str, name: str) -> int:
-        """
-        Gets the average time per release
+        """Function to get the average time per release.
+
+        This is done using `LibrariesAPICall.get_release_count` function.
+        This function also uses the `LibrariesAPICall.get_latest_release_date` 
+        and `LibrariesAPICall.get_first_release_date` functions.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            int: The average time per release
+            int: The average time per release.
         """
 
         logging.info('Getting the average release frequency')
@@ -61,15 +62,16 @@ class LibrariesAPICall:
             return None
 
     def get_contributors_count(self, owner: str, name: str) -> int:
-        """
-        Get the project's repository contributor count
+        """Function to get the project repository's contributor count.
+
+        This is done using the `LibrariesAPICall.get_project_repository` function.
 
         Args:
-            owner (str): The owner of the project
-            name (str): The name of the project
+            owner (str): The owner of the project.
+            name (str): The name of the project.
 
         Returns:
-            int: The project's repository contributor count
+            int: The project's repository contributor count.
         """
 
         logging.info('Getting the repository contributor count')
@@ -87,16 +89,17 @@ class LibrariesAPICall:
             return None
 
     def get_dependency_count(self, platform: str, name: str, release: str) -> int:
-        """
-        Get the project's dependency count
+        """Function to get the project's dependency count.
+
+        This is done using the `LibrariesAPICall.get_project_dependencies` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
-            release (str): The release name
+            platform (str): The platform of the project.
+            name (str): The name of the project.
+            release (str): The release name.
 
         Returns:
-            int: The project's dependency count
+            int: The project's dependency count.
         """
 
         logging.info('Getting the dependency count')
@@ -121,15 +124,16 @@ class LibrariesAPICall:
             return None
 
     def get_dependent_count(self, platform: str, name: str) -> int:
-        """
-        Get the amount of dependents the project has
+        """Function to get the amount of dependents the project has.
+
+        This is done using the `LibrariesAPICall.get_project_information` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            int: The amount of dependents the project has
+            int: The amount of dependents the project has.
         """
 
         logging.info('Getting the dependent count')
@@ -147,15 +151,16 @@ class LibrariesAPICall:
             return None
 
     def get_latest_release_date(self, platform: str, name: str) -> str:
-        """
-        Get the time of the project's latest release
+        """Function to get the time of the project's latest release.
+
+        This is done using the `LibrariesAPICall.get_project_information` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            str: The time of the project's latest release (in the format YYYY-MM-DDTHH:MM:SS, using the UTC timezone)
+            str: The time of the project's latest release (in the format YYYY-MM-DDTHH:MM:SS, using the UTC timezone).
         """
 
         logging.info('Getting the latest release date')
@@ -173,15 +178,16 @@ class LibrariesAPICall:
             return None
 
     def get_first_release_date(self, platform: str, name: str) -> str:
-        """
-        Get the time of the project's latest release
+        """Function to get the time of the project's latest release.
+
+        This is done using the `LibrariesAPICall.get_project_information` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            str: The time of the project's latest release (in the format YYYY-MM-DDTHH:MM:SS, using the UTC timezone)
+            str: The time of the project's latest release (in the format YYYY-MM-DDTHH:MM:SS, using the UTC timezone).
         """
 
         logging.info('Getting the first release date')
@@ -215,15 +221,16 @@ class LibrariesAPICall:
         return None
 
     def get_release_count(self, platform: str, name: str) -> int:
-        """
-        Get the amount of releases the project has
+        """Function to get the amount of releases the project has.
+
+        This is done using the `LibrariesAPICall.get_project_information` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            int: The amount of releases the project has
+            int: The amount of releases the project has.
         """
 
         logging.info('Getting the release count')
@@ -241,15 +248,16 @@ class LibrariesAPICall:
             return None
 
     def get_sourcerank(self, platform: str, name: str) -> int:
-        """
-        Get the project's source rank
+        """Function to get the project's source rank.
+
+        This is done using the `LibrariesAPICall.get_project_information` function.
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            int: The project's source rank
+            int: The project's source rank.
         """
 
         logging.info('Getting the project source rank')
@@ -267,15 +275,16 @@ class LibrariesAPICall:
             return None
 
     def get_project_repository(self, owner: str, name: str) -> dict:
-        """
-        Get the project's repository information from Libraries.io
+        """Function to get the project's repository information from Libraries.io.
+
+        This is done by using the [Libraries.io repository API](https://libraries.io/api#repository).
 
         Args:
-            owner (str): The owner of the project
-            name (str): The name of the project
+            owner (str): The owner of the project.
+            name (str): The name of the project.
 
         Returns:
-            dict: The project repository's information
+            dict: The project repository's information.
         """
 
         logging.info("Getting the project's repository information")
@@ -294,16 +303,17 @@ class LibrariesAPICall:
             return None
 
     def get_project_dependencies(self, platform: str, name: str, release: str) -> dict:
-        """
-        Get the project's dependencies from Libraries.io
+        """Function to get the project's dependencies from Libraries.io.
+
+        This is done using the [Libraries.io project dependencies API](https://libraries.io/api#project-dependencies).
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
-            release (str): The release name
+            platform (str): The platform of the project.
+            name (str): The name of the project.
+            release (str): The release name.
 
         Returns:
-            dict: The project's dependencies
+            dict: The project's dependencies.
         """
 
         logging.info("Getting the project's dependency information")
@@ -322,15 +332,16 @@ class LibrariesAPICall:
             return None
 
     def get_project_information(self, platform: str, name: str) -> dict:
-        """
-        Get the project information from Libraries.io
+        """Function to get the project information from Libraries.io.
+
+        This is done using the [Libraries.io project API](https://libraries.io/api#project).
 
         Args:
-            platform (str): The platform of the project
-            name (str): The name of the project
+            platform (str): The platform of the project.
+            name (str): The name of the project.
 
         Returns:
-            dict: The project's information
+            dict: The project's information.
         """
 
         logging.info("Getting the project's information")

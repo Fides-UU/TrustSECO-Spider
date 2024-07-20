@@ -6,8 +6,10 @@ on:
       - development
 jobs:
   build:
-    runs-on: self-hosted
-    container: python:3.10.4
+    strategy:
+      matrix:
+        python-version: [3.10.14]
+    runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }}"
 

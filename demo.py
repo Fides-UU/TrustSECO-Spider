@@ -1,6 +1,10 @@
-"""Basic demo file, purely for demonstration purposes.
+"""File containing the demonstration code for the TrustSECO-Spider.
 
-Before running this file, the Flask application needs to be started. (instructions for which can be found in the README.md file)
+This file can be run in order to test the TrustSECO-Spider. When running this file
+without any arguments, it will print a list of possible arguments to the console.
+Please use these in order to customize the demonstration to your needs.
+
+**Before running this file, the Flask application needs to be started. (instructions for which can be found in the README.md file)**
 """
 # Import for getting input parameters
 import sys
@@ -56,17 +60,16 @@ so_dict = {
 
 virus_dict = {
     "virus_scanning": [
-        "virus_ratio"
+        "vs_virus_ratio"
     ]
 }
 
 
 def numpy_demo(wanted_data_points: dict) -> None:
-    """
-    Function containing the code for the numpy demo.
+    """Function for testing the TrustSECO-Spider on the numpy repository.
 
     Args:
-        scan_viruses (bool): Boolean denoting if we also want to scan for viruses
+        wanted_data_points (dict): Dictionary containing the wanted data-points.
     """
 
     # Set the input JSON
@@ -98,11 +101,10 @@ def numpy_demo(wanted_data_points: dict) -> None:
 
 
 def afnetworking_demo(wanted_data_points: dict) -> None:
-    """
-    Function containing the code for the AFNetworking demo.
+    """Function for testing the TrustSECO-Spider on the AFNetworking repository.
 
     Args:
-        scan_viruses (bool): Boolean denoting if we also want to scan for viruses
+        wanted_data_points (dict): Dictionary containing the wanted data-points.
     """
 
     # Set the input JSON
@@ -134,8 +136,9 @@ def afnetworking_demo(wanted_data_points: dict) -> None:
 
 
 def virus_free_demo() -> None:
-    """
-    Function containing the code for the safe virus-scan demo.
+    """Function for testing the ClamAV container using known virus-free files.
+
+    The files in question are taken from the "numpy" repository.
     """
 
     # Setup the scanner
@@ -156,8 +159,11 @@ def virus_free_demo() -> None:
 
 
 def virus_infected_demo() -> None:
-    """
-    Function containing the code for the infected virus-scan demo.
+    """Function for testing the ClamAV container using known dummy-virus-infected files.
+
+    The file that's used for this test contains various EICAR-containing files.
+    EICAR is a type of anti-virus test file that is used to test virus-scanners.
+    For more information, see: [EICAR Wikipedia page](https://www.wikiwand.com/en/EICAR_test_file)
     """
 
     # Setup the scanner
