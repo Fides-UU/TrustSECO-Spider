@@ -56,6 +56,8 @@ class CVESpider:
             # Initialise the list of CVE data
             data = []
             # Go through all the links and extract the CVE data
+            # TODO: this only uses the first 40 vurlnerabilities otherwise the
+            # result gets to big which in turn can't be stored on the dlt
             for cve_code in cve_codes[:40]:
                 cve_data = self.extract_cve_data(cve_code)
                 if cve_data is not None:
