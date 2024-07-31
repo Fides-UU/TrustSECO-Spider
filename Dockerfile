@@ -1,5 +1,5 @@
 # Set the starting image
-FROM python:3.10.4-slim
+FROM python:3.12
 
 # Copy over the needed folders
 COPY ./app.py /app/app.py
