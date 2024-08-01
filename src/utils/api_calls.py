@@ -80,6 +80,10 @@ def make_api_call(api_url: str, api_type: str) -> requests.Response:
         logging.warning('Reached secondary rate limit, retrying after 60 seconds.')
         time.sleep(60)
         return make_api_call(api_url, api_type)
+    elif data_response.status_code == 202 and api_type == constants.API_GITHUB:
+        # Background job has been created, wait an request again
+        time.sleep(30)
+        return make_api_call(api_url, api_type)
 
     # Else, we got an unknown error so return None
     else:
