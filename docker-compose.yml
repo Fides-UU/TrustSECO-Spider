@@ -4,6 +4,8 @@ services:
     build: .
     networks:
       - internal
+    ports:
+      - "5000:5000"
     volumes:
       - type: volume
         source: TrustSECO
