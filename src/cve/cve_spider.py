@@ -6,11 +6,7 @@ This crawling is done by using the [Requests](https://requests.readthedocs.io/en
 and the [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) library for HTML parsing.
 """
 
-# Import for improved logging
 import logging
-# Import for handing JSON objects
-import json
-# Import for sending and handling HTTP requests
 import requests
 
 
@@ -18,7 +14,8 @@ class CVESpider:
     """Class containing the CVE spider."""
 
     def get_cve_vulnerability_count(self, name: str) -> int | None:
-        """Function to get the amount of vulnerabilities affecting the given package.
+        """Function to get the amount of vulnerabilities affecting the given
+        package.
 
         Args:
             name (str): The name of the package.
@@ -47,26 +44,32 @@ class CVESpider:
         # result gets to big which in turn can't be stored on the dlt.
         # It would probably be better to fix this in the dlt/cosy side
         if cve_data := self.request_cve_data(name):
-            return [self.extract_cve_data(vulnerabilitie) for vulnerabilitie in cve_data["vulnerabilities"]][:40]
+            return [
+                self.extract_cve_data(vulnerabilitie)
+                for vulnerabilitie in cve_data["vulnerabilities"]
+            ][:40]
         else:
             return None
 
     def get_cve_codes(self, name: str) -> list | None:
-        """Function for getting all of the CVE codes that affect a given package.
+        """Function for getting all CVE codes that affect a given package.
 
         Args:
             name (str): The name of the package.
 
         Returns:
-            list: A list of CVE codes for vulnerabilities affecting the given package.
+            list: A list of CVE codes affecting the given package.
         """
 
         if cve_data := self.request_cve_data(name):
-            return [vulnerabilitie["cve"]["id"] for vulnerabilitie in cve_data["vulnerabilities"]]
+            return [
+                vulnerabilitie["cve"]["id"]
+                for vulnerabilitie in cve_data["vulnerabilities"]
+            ]
         else:
             return None
 
-    def extract_cve_data(self, data: dict) -> dict | None:
+    def extract_cve_data(self, data: dict) -> dict:
         """Function to extract the needed data from the api json.
 
         The data it can extract contains:
@@ -85,14 +88,13 @@ class CVESpider:
             dict: A dictionary containing the extracted data.
         """
 
-        configurations = data["cve"].get("configurations")
         affected_version_start = None
         affected_version_start_type = None
         affected_version_end = None
         affected_version_end_type = None
+        configurations = data["cve"].get("configurations")
 
         if configurations is not None:
-            logging.debug(json.dumps(configurations, indent=2))
             cpe_match = configurations[0]["nodes"][0]["cpeMatch"][0]
 
             if affected_version_start := cpe_match.get("versionStartIncluding"):
@@ -115,22 +117,30 @@ class CVESpider:
         except IndexError:
             logging.info(f'{data["cve"]["id"]}: Could not find score.')
 
-        # Put the extracted data into a dictionary
         cve_data = {
-            'CVE_ID': data["cve"]["id"],
-            'CVE_score': score,
-            'CVE_affected_version_start_type': affected_version_start_type,
-            'CVE_affected_version_start': affected_version_start,
-            'CVE_affected_version_end_type': affected_version_end_type,
-            'CVE_affected_version_end': affected_version_end,
+            "CVE_ID": data["cve"]["id"],
+            "CVE_score": score,
+            "CVE_affected_version_start_type": affected_version_start_type,
+            "CVE_affected_version_start": affected_version_start,
+            "CVE_affected_version_end_type": affected_version_end_type,
+            "CVE_affected_version_end": affected_version_end,
         }
 
-        # Return the CVE data
         return cve_data
 
-    def request_cve_data(self, package_name) -> dict | None:
+    def request_cve_data(self, package_name: str) -> dict | None:
+        """Get all cves for a corresponding package.
+
+        For more information read the api documentation:
+        https://nvd.nist.gov/developers/vulnerabilities
+
+        Args:
+            package_name: Name of the package to search for.
+
+        Returns:
+            Json response of the api, None if the request was not sucessful
+        """
         url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString=cpe:2.3:*:*:{package_name}"
-        url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch={package_name}"
         resp = requests.get(url)
         if resp.status_code == 200:
             return resp.json()
