@@ -1,218 +1,241 @@
 """File containing the CVE spider.
 
-This file contains the logic for crawling through the [CVE website](https://cve.mitre.org/index.html).
+This file contains the logic for the cve API.
 
-This crawling is done by using the [Requests](https://requests.readthedocs.io/en/latest/) library for HTTP calls,
-and the [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) library for HTML parsing.
+For more info on the API visit the documentation:
+https://nvd.nist.gov/developers/vulnerabilities
 """
 
-# Import for improved logging
 import logging
-# Import for handing JSON objects
-import json
-# Import for sending and handling HTTP requests
 import requests
-# Import for parsing and searching through HTML
-from bs4 import BeautifulSoup
+from packaging.version import Version, InvalidVersion
 
 
 class CVESpider:
     """Class containing the CVE spider."""
 
-    def get_cve_vulnerability_count(self, name: str) -> int:
-        """Function to get the amount of vulnerabilities affecting the given package.
+    def get_cve_vulnerability_count(self, name: str) -> int | None:
+        """Function to get the amount of vulnerabilities affecting the given
+        package.
 
         Args:
             name (str): The name of the package.
 
         Returns:
-            int: The amount of known vulnerabilities of the given package.
+            int | None: The amount of known vulnerabilities of the given
+                package. None if api returns an error.
         """
 
-        # Get the list of CVE links
-        cve_codes = self.get_cve_codes(name)
-
-        # Return the list of CVE data
-        if cve_codes is not None:
-            return len(cve_codes)
+        if cve_data := self.__request_cve_data(name):
+            return cve_data["totalResults"]
         else:
             return None
 
-    def get_all_cve_data(self, name: str) -> list:
-        """Function to get all the available CVE data for a given package.
+    def get_all_cve_data(self, name: str) -> list | None:
+        """Function to get all CVE data for a given package.
 
         Args:
             name (str): The name of the package.
 
         Returns:
-            list: A list of all the CVE data for the given package.
+            list | None: A list of all the CVE data for the given package. None
+                if api returns an error.
         """
 
-        # Get the list of CVE links
-        cve_codes = self.get_cve_codes(name)
-
-        # make sure we actually got a result back
-        if cve_codes is not None:
-            # Initialise the list of CVE data
-            data = []
-            # Go through all the links and extract the CVE data
-            # TODO: this only uses the first 40 vurlnerabilities otherwise the
-            # result gets to big which in turn can't be stored on the dlt
-            for cve_code in cve_codes[:40]:
-                cve_data = self.extract_cve_data(cve_code)
-                if cve_data is not None:
-                    data.append(cve_data)
-
-            # Return the list of CVE data
-            return data
+        # TODO: this only uses the first 40 vurlnerabilities otherwise the
+        # result gets to big which in turn can't be stored on the dlt.
+        # It would probably be better to fix this in the dlt/cosy side
+        if cve_data := self.__request_cve_data(name):
+            return [
+                self.__extract_cve_data(vulnerabilitie, name)
+                for vulnerabilitie in cve_data["vulnerabilities"]
+            ][:40]
         else:
             return None
 
-    def get_cve_codes(self, name: str) -> list:
-        """Function for getting all of the CVE codes that affect a given package.
+    def get_cve_codes(self, name: str) -> list | None:
+        """Function for getting all CVE codes that affect a given package.
 
         Args:
             name (str): The name of the package.
 
         Returns:
-            list: A list of CVE codes for vulnerabilities affecting the given package.
+            list: A list of CVE codes affecting the given package.
         """
 
-        # Create the URL for the package
-        cve_link = f'https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword={name}'
-
-        # Get a soup object of the CVE webpage
-        soup = self.get_and_parse_webpage(cve_link)
-
-        # Make sure we got a valid result
-        if soup is None:
-            return None
-
-        # Find the <a> tags that contain the CVE links
-        tables = soup.find_all('table')
-        # See if the wanted table exists
-        if tables is not None:
-            if len(tables) == 5:
-                table = tables[2]
-                links = table.find_all('a')
-
-                # Return the list of CVE codes
-                cve_codes = []
-                for link in links:
-                    cve_codes.append(link.text)
-
-                # Return the list of CVE codes
-                return cve_codes
-            else:
-                return None
+        if cve_data := self.__request_cve_data(name):
+            return [
+                vulnerabilitie["cve"]["id"]
+                for vulnerabilitie in cve_data["vulnerabilities"]
+            ]
         else:
             return None
 
-    def extract_cve_data(self, cve_code: str) -> dict:
-        """Function to extract the needed data from the CVE webpage.
+    def __extract_cve_data(self, data: dict, package_name: str) -> dict:
+        """Function to extract the needed data from the json the api returned.
 
-        The data it can extract contains:
-            - CVE code
-            - CVE score
-            - Affected versions:
-                - Start version type
-                - Start version
-                - End version type
-                - End version
+        The data it extracts contains:
+        - CVE_ID: the cve id
+        - CVE_score: the cve severity score,
+        - CVE_affected_version_start_type: including or excluding
+        - CVE_affected_version_start: first version affected
+        - CVE_affected_version_end_type: including or excluding
+        - CVE_affected_version_end: last version affected
 
         Args:
-            cve_code (str): The CVE code of the vulnerability.
+            data (dict): The raw CVE data.
+            package_name (str): The name of the package we are extracting the
+                data for.
 
         Returns:
             dict: A dictionary containing the extracted data.
         """
 
-        # Create the full URL for the CVE link
-        full_url = f'https://nvd.nist.gov/vuln/detail/{cve_code}'
+        affected_versions_dict = self.__extract_affected_versions(data, package_name)
 
-        # Get a soup object of the CVE webpage
-        soup = self.get_and_parse_webpage(full_url)
-
-        # Make sure we got a valid result
-        if soup is None:
-            return None
-
-        # get the vulnerability score
-        score_element = soup.find(id='Cvss3NistCalculatorAnchor')
-        # Make sure we got a valid result
         score = None
-        if score_element is not None:
-            # Parse the score string
-            score = float(score_element.text.split(' ')[0])
 
-        # Get the affected versions
-        affected_version_start_type = None
-        affected_version_start = None
-        affected_version_end_type = None
-        affected_version_end = None
         try:
-            json_data = json.loads(
-                soup.find(id='cveTreeJsonDataHidden')['value'])
-            # Go to the location of the data within the JSON object
-            data = json_data[0]['containers'][0]['cpes'][0]
-            # Get the information about the affected versions
-            affected_version_start_type = None
-            if data['rangeStartType'] != 'none':
-                affected_version_start_type = data['rangeStartType']
+            metric_version = list(data["cve"]["metrics"].keys())[0]
+            score = data["cve"]["metrics"][metric_version][0]["cvssData"]["baseScore"]
+        except IndexError:
+            logging.info(f'{data["cve"]["id"]}: Could not find score.')
 
-            affected_version_end_type = None
-            if data['rangeEndType'] != 'none':
-                affected_version_end_type = data['rangeEndType']
-
-            affected_version_start = data['rangeStartVersion']
-            affected_version_end = data['rangeEndVersion']
-        except Exception as e:
-            logging.error(f'{cve_code}: Could not find affected versions.')
-            logging.error(e)
-
-        # Put the extracted data into a dictionary
         cve_data = {
-            'CVE_ID': cve_code,
-            'CVE_score': score,
-            'CVE_affected_version_start_type': affected_version_start_type,
-            'CVE_affected_version_start': affected_version_start,
-            'CVE_affected_version_end_type': affected_version_end_type,
-            'CVE_affected_version_end': affected_version_end,
+            "CVE_ID": data["cve"]["id"],
+            "CVE_score": score,
+            "CVE_affected_version_start_type": affected_versions_dict[
+                "CVE_affected_version_start_type"
+            ],
+            "CVE_affected_version_start": affected_versions_dict[
+                "CVE_affected_version_start"
+            ],
+            "CVE_affected_version_end_type": affected_versions_dict[
+                "CVE_affected_version_end_type"
+            ],
+            "CVE_affected_version_end": affected_versions_dict[
+                "CVE_affected_version_end"
+            ],
         }
 
-        # Return the CVE data
         return cve_data
 
-    def get_and_parse_webpage(self, url: str) -> BeautifulSoup:
-        """Function to convert the HTML of a given webpage into a BeautifulSoup object.
+    def __extract_affected_versions(self, data: dict, package_name: str) -> dict:
+        """Function to extract the affected version data.
 
         Args:
-            url (str): The URL of the webpage.
+            data (dict): The raw CVE data.
+            package_name (str): The name of the package we are extracting the
+                affected versions for.
 
         Returns:
-            BeautifulSoup: A BeautifulSoup object of the webpage.
+            dict: A dictionary containing the extracted data.
         """
+        affected_version_start = None
+        affected_version_start_type = None
+        affected_version_end = None
+        affected_version_end_type = None
+        configurations = data["cve"].get("configurations")
 
-        try:
-            # Make a GET request to the given URL
-            html = requests.get(url)
-            if html.status_code != 200:
-                raise requests.exceptions.RequestException(
-                    'Could not load the webpage')
-        except requests.exceptions.RequestException as e:
-            logging.error(e)
+        if configurations is not None:
+            # first get all the cpeMatch data, this is contained in nodes which
+            # are contained in configurations
+            cpe_matches = [
+                cpe
+                for configuration in configurations
+                for node in configuration["nodes"]
+                for cpe in node["cpeMatch"]
+            ]
+
+            # next filter out all non matching criteria, this is needed because
+            # os versions which contain the broken packages are also included
+            cpe_matches_filtered = list(
+                filter(
+                    lambda cpe_match: cpe_match["criteria"].split(":")[4]
+                    == package_name,
+                    cpe_matches,
+                )
+            )
+
+            # next sort them by version for each key and grab the lowest one
+            versions_start_incl = self.__sort_by_version(
+                cpe_matches_filtered, "versionStartIncluding"
+            )
+            versions_start_excl = self.__sort_by_version(
+                cpe_matches_filtered, "versionStartExcluding"
+            )
+            if len(versions_start_excl) > 0 and (
+                len(versions_start_incl) <= 0
+                or versions_start_excl < versions_start_incl
+            ):
+                affected_version_start_type = "excluding"
+                affected_version_start = str(versions_start_excl[0])
+            elif len(versions_start_incl) > 0:
+                affected_version_start_type = "including"
+                affected_version_start = str(versions_start_incl[0])
+
+            # grab the highest for the upper version limit
+            versions_end_incl = self.__sort_by_version(
+                cpe_matches_filtered, "versionEndIncluding"
+            )
+            versions_end_excl = self.__sort_by_version(
+                cpe_matches_filtered, "versionEndExcluding"
+            )
+            if len(versions_end_excl) > 0 and (
+                len(versions_end_incl) <= 0 or versions_end_excl > versions_end_incl
+            ):
+                affected_version_end_type = "excluding"
+                affected_version_end = str(versions_end_excl[-1])
+            elif len(versions_end_incl) > 0:
+                affected_version_end_type = "including"
+                affected_version_end = str(versions_end_incl[-1])
+        else:
+            logging.info(f'{data["cve"]["id"]}: Could not find affected versions.')
+
+        return {
+            "CVE_affected_version_start_type": affected_version_start_type,
+            "CVE_affected_version_start": affected_version_start,
+            "CVE_affected_version_end_type": affected_version_end_type,
+            "CVE_affected_version_end": affected_version_end,
+        }
+
+    def __sort_by_version(self, cpe_matches: list[dict], key: str) -> list[Version]:
+        """Gathers all versions stored under a specific key, and sorts them.
+
+        Args:
+            cpe_matches (list[dict]): A list of cpeMatch dicts to search
+                through.
+            key (str): The key where the versions should be gathered from in
+                the cpeMatch dicts, versionEndExcluding for example.
+
+        Returns:
+            list[Version]: A sorted list of all versions.
+        """
+        versions = []
+        for cpe_match in cpe_matches:
+            try:
+                versions.append(Version(cpe_match[key]))
+            except InvalidVersion:
+                pass
+            except KeyError:
+                pass
+        return sorted(versions)
+
+    def __request_cve_data(self, package_name: str) -> dict | None:
+        """Get all cve data for a corresponding package.
+
+        Args:
+            package_name: Name of the package to search for.
+
+        Returns:
+            Json response of the api, None if the request was not sucessful
+        """
+        url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString=cpe:2.3:a:*:{package_name}"
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            return resp.json()
+        else:
             return None
-
-        try:
-            # Convert the raw HTML into a BeautifulSoup object
-            soup = BeautifulSoup(html.text, 'html.parser')
-        except Exception as e:
-            logging.error('Could not parse the webpage.')
-            logging.error(e)
-            return None
-
-        # Return the BeautifulSoup object
-        return soup
 
 
 """

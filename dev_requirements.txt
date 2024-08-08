@@ -7,4 +7,5 @@ bs4
 python-dotenv
 flask
 flask-cors
+packaging
 responses
