@@ -1,13 +1,14 @@
 """File containing the CVE spider.
 
-This file contains the logic for crawling through the [CVE website](https://cve.mitre.org/index.html).
+This file contains the logic for the cve API.
 
-This crawling is done by using the [Requests](https://requests.readthedocs.io/en/latest/) library for HTTP calls,
-and the [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) library for HTML parsing.
+For more info on the API visit the documentation:
+https://nvd.nist.gov/developers/vulnerabilities
 """
 
 import logging
 import requests
+from packaging.version import Version, InvalidVersion
 
 
 class CVESpider:
@@ -45,7 +46,7 @@ class CVESpider:
         # It would probably be better to fix this in the dlt/cosy side
         if cve_data := self.request_cve_data(name):
             return [
-                self.extract_cve_data(vulnerabilitie)
+                self.extract_cve_data(vulnerabilitie, name)
                 for vulnerabilitie in cve_data["vulnerabilities"]
             ][:40]
         else:
@@ -69,7 +70,7 @@ class CVESpider:
         else:
             return None
 
-    def extract_cve_data(self, data: dict) -> dict:
+    def extract_cve_data(self, data: dict, package_name: str) -> dict:
         """Function to extract the needed data from the api json.
 
         The data it can extract contains:
@@ -83,31 +84,14 @@ class CVESpider:
 
         Args:
             data (dict): The raw CVE data.
+            package_name (str): The name of the package we are extracting the
+                data for.
 
         Returns:
             dict: A dictionary containing the extracted data.
         """
 
-        affected_version_start = None
-        affected_version_start_type = None
-        affected_version_end = None
-        affected_version_end_type = None
-        configurations = data["cve"].get("configurations")
-
-        if configurations is not None:
-            cpe_match = configurations[0]["nodes"][0]["cpeMatch"][0]
-
-            if affected_version_start := cpe_match.get("versionStartIncluding"):
-                affected_version_start_type = "including"
-            elif affected_version_start := cpe_match.get("versionStartExcluding"):
-                affected_version_start_type = "excluding"
-
-            if affected_version_end := cpe_match.get("versionEndIncluding"):
-                affected_version_end_type = "including"
-            elif affected_version_end := cpe_match.get("versionEndExcluding"):
-                affected_version_end_type = "excluding"
-        else:
-            logging.info(f'{data["cve"]["id"]}: Could not find affected versions.')
+        affected_versions_dict = self.extract_affected_versions(data, package_name)
 
         score = None
 
@@ -120,19 +104,125 @@ class CVESpider:
         cve_data = {
             "CVE_ID": data["cve"]["id"],
             "CVE_score": score,
+            "CVE_affected_version_start_type": affected_versions_dict[
+                "CVE_affected_version_start_type"
+            ],
+            "CVE_affected_version_start": affected_versions_dict[
+                "CVE_affected_version_start"
+            ],
+            "CVE_affected_version_end_type": affected_versions_dict[
+                "CVE_affected_version_end_type"
+            ],
+            "CVE_affected_version_end": affected_versions_dict[
+                "CVE_affected_version_end"
+            ],
+        }
+
+        return cve_data
+
+    def extract_affected_versions(self, data: dict, package_name: str) -> dict:
+        """Function to extract the affected version data.
+
+        Args:
+            data (dict): The raw CVE data.
+            package_name (str): The name of the package we are extracting the
+                affected versions for.
+
+        Returns:
+            dict: A dictionary containing the extracted data.
+        """
+        affected_version_start = None
+        affected_version_start_type = None
+        affected_version_end = None
+        affected_version_end_type = None
+        configurations = data["cve"].get("configurations")
+
+        if configurations is not None:
+            # first get all the cpeMatch data, this is contained in nodes which
+            # are contained in configurations
+            cpe_matches = [
+                cpe
+                for configuration in configurations
+                for node in configuration["nodes"]
+                for cpe in node["cpeMatch"]
+            ]
+
+            # next filter out all non matching criteria, this is needed because
+            # os versions which contain the broken packages are also included
+            cpe_matches_filtered = list(
+                filter(
+                    lambda cpe_match: cpe_match["criteria"].split(":")[4]
+                    == package_name,
+                    cpe_matches,
+                )
+            )
+
+            # next sort them by version for each key and grab the lowest one
+            versions_start_incl = self.sort_by_version(
+                cpe_matches_filtered, "versionStartIncluding"
+            )
+            versions_start_excl = self.sort_by_version(
+                cpe_matches_filtered, "versionStartExcluding"
+            )
+            if len(versions_start_excl) > 0 and (
+                len(versions_start_incl) <= 0
+                or versions_start_excl < versions_start_incl
+            ):
+                affected_version_start_type = "excluding"
+                affected_version_start = str(versions_start_excl[0])
+            elif len(versions_start_incl) > 0:
+                affected_version_start_type = "including"
+                affected_version_start = str(versions_start_incl[0])
+
+            # grab the highest for the upper version limit
+            versions_end_incl = self.sort_by_version(
+                cpe_matches_filtered, "versionEndIncluding"
+            )
+            versions_end_excl = self.sort_by_version(
+                cpe_matches_filtered, "versionEndExcluding"
+            )
+            if len(versions_end_excl) > 0 and (
+                len(versions_end_incl) <= 0 or versions_end_excl > versions_end_incl
+            ):
+                affected_version_end_type = "excluding"
+                affected_version_end = str(versions_end_excl[-1])
+            elif len(versions_end_incl) > 0:
+                affected_version_end_type = "including"
+                affected_version_end = str(versions_end_incl[-1])
+        else:
+            logging.info(f'{data["cve"]["id"]}: Could not find affected versions.')
+
+        return {
             "CVE_affected_version_start_type": affected_version_start_type,
             "CVE_affected_version_start": affected_version_start,
             "CVE_affected_version_end_type": affected_version_end_type,
             "CVE_affected_version_end": affected_version_end,
         }
 
-        return cve_data
+    def sort_by_version(self, cpe_matches: list[dict], key: str) -> list[Version]:
+        """Gathers all the versions stored unders a specific key.
+
+        Args:
+            cpe_matches (list[dict]): A list of cpeMatch dicts to search
+                through.
+            key (str): The key where the versions should be gathered from in
+                the cpeMatch dicts, versionEndExcluding for example.
+
+        Returns:
+            list[Version]: A sorted list of all versions.
+        """
+        versions = []
+        for cpe_match in cpe_matches:
+            try:
+                versions.append(Version(cpe_match[key]))
+            except InvalidVersion:
+                pass
+            except KeyError:
+                pass
+        return sorted(versions)
 
     def request_cve_data(self, package_name: str) -> dict | None:
         """Get all cves for a corresponding package.
-
-        For more information read the api documentation:
-        https://nvd.nist.gov/developers/vulnerabilities
 
         Args:
             package_name: Name of the package to search for.
@@ -140,7 +230,7 @@ class CVESpider:
         Returns:
             Json response of the api, None if the request was not sucessful
         """
-        url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString=cpe:2.3:*:*:{package_name}"
+        url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?virtualMatchString=cpe:2.3:a:*:{package_name}"
         resp = requests.get(url)
         if resp.status_code == 200:
             return resp.json()
