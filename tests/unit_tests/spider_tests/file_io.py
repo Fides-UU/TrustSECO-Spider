@@ -1,5 +1,7 @@
 """File containing all the IO logic for the spider unit tests"""
 
+import json
+
 
 class FileIOForGHSpiderTests:
     """Class containing all of the IO functions for the spider tests."""
@@ -90,84 +92,23 @@ class FileIOForGHSpiderTests:
 class FileIOForCVETests:
     """Class containing all of the IO functions for the CVE tests."""
 
-    def get_regular_page_extract() -> str:
-        """Gets the regular page for the CVE extract tests.
+    def get_zero_cves() -> dict:
+        """Get api response with zero cves."""
 
-        Returns:
-            str: The html page
-        """
+        with open('tests/unit_tests/spider_tests/spider_files/cve_api/0_cves.json', 'r') as zero_cves:
+            return json.loads(zero_cves.read())
 
-        with open('tests/unit_tests/spider_tests/spider_files/cve_extract/regular_vulnerability_page.txt', 'r', encoding='iso-8859-15') as regular:
-            return regular.read()
+    def get_express_cves() -> dict:
+        """Get api response for express package. Contains 5 cves."""
 
-    def get_no_version_page_extract() -> str:
-        """Gets the page with no version data for the CVE extract tests.
+        with open('tests/unit_tests/spider_tests/spider_files/cve_api/express_5_cves.json', 'r') as express_cves:
+            return json.loads(express_cves.read())
 
-        Returns:
-            str: The html page
-        """
+    def get_numpy_cves() -> dict:
+        """Get api response for express package. Contains 5 cves."""
 
-        with open('tests/unit_tests/spider_tests/spider_files/cve_extract/no_version_vulnerability_page.txt', 'r', encoding='iso-8859-15') as no_version:
-            return no_version.read()
-
-    def get_no_score_page_extract() -> str:
-        """Gets the page with no score data for the CVE extract tests.
-
-        Returns:
-            str: The html page
-        """
-        with open('tests/unit_tests/spider_tests/spider_files/cve_extract/no_score_vulnerability_page.txt', 'r', encoding='iso-8859-15') as no_score:
-            return no_score.read()
-
-    def get_incorrect_version_page_extract() -> str:
-        """Gets the page with incorrect version data for the CVE extract tests.
-
-        Returns:
-            str: The html page
-        """
-
-        with open('tests/unit_tests/spider_tests/spider_files/cve_extract/incorrect_version_vulnerability_page.txt', 'r', encoding='iso-8859-15') as incorrect_version:
-            return incorrect_version.read()
-
-    def get_regular_page_get_codes() -> str:
-        """Gets the regular page for the CVE get_codes tests.
-
-        Returns:
-            str: The html page
-        """
-
-        with open('tests/unit_tests/spider_tests/spider_files/cve_get_codes/regular_page.txt', 'r', encoding='iso-8859-15') as regular:
-            return regular.read()
-
-    def get_no_tables_page_get_codes() -> str:
-        """Gets the page with no tables for the CVE get_codes tests.
-
-        Returns:
-            str: The html page
-        """
-
-        with open('tests/unit_tests/spider_tests/spider_files/cve_get_codes/no_tables_page.txt', 'r', encoding='iso-8859-15') as no_tables:
-            return no_tables.read()
-
-    def get_no_links_page_get_codes() -> str:
-        """Gets the page with no links for the CVE get_codes tests.
-
-        Returns:
-            str: The html page
-        """
-
-        with open('tests/unit_tests/spider_tests/spider_files/cve_get_codes/no_links_page.txt', 'r', encoding='iso-8859-15') as no_links:
-            return no_links.read()
-
-    def get_missing_table_page_get_codes() -> str:
-        """Gets the page with a missing table for the CVE get_codes tests.
-
-        Returns:
-            str: The html page
-        """
-
-        with open('tests/unit_tests/spider_tests/spider_files/cve_get_codes/missing_table_page.txt', 'r', encoding='iso-8859-15') as missing_table:
-            return missing_table.read()
+        with open('tests/unit_tests/spider_tests/spider_files/cve_api/numpy_cves.json', 'r') as numpy_cves:
+            return json.loads(numpy_cves.read())
 
 
 """

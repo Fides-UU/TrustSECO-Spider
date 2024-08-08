@@ -23,10 +23,10 @@ class CVESpider:
 
         Returns:
             int | None: The amount of known vulnerabilities of the given
-            package. None if api returns error.
+                package. None if api returns an error.
         """
 
-        if cve_data := self.request_cve_data(name):
+        if cve_data := self.__request_cve_data(name):
             return cve_data["totalResults"]
         else:
             return None
@@ -38,15 +38,16 @@ class CVESpider:
             name (str): The name of the package.
 
         Returns:
-            list: A list of all the CVE data for the given package.
+            list | None: A list of all the CVE data for the given package. None
+                if api returns an error.
         """
 
         # TODO: this only uses the first 40 vurlnerabilities otherwise the
         # result gets to big which in turn can't be stored on the dlt.
         # It would probably be better to fix this in the dlt/cosy side
-        if cve_data := self.request_cve_data(name):
+        if cve_data := self.__request_cve_data(name):
             return [
-                self.extract_cve_data(vulnerabilitie, name)
+                self.__extract_cve_data(vulnerabilitie, name)
                 for vulnerabilitie in cve_data["vulnerabilities"]
             ][:40]
         else:
@@ -62,7 +63,7 @@ class CVESpider:
             list: A list of CVE codes affecting the given package.
         """
 
-        if cve_data := self.request_cve_data(name):
+        if cve_data := self.__request_cve_data(name):
             return [
                 vulnerabilitie["cve"]["id"]
                 for vulnerabilitie in cve_data["vulnerabilities"]
@@ -70,17 +71,16 @@ class CVESpider:
         else:
             return None
 
-    def extract_cve_data(self, data: dict, package_name: str) -> dict:
-        """Function to extract the needed data from the api json.
+    def __extract_cve_data(self, data: dict, package_name: str) -> dict:
+        """Function to extract the needed data from the json the api returned.
 
-        The data it can extract contains:
-            - CVE code
-            - CVE score
-            - Affected versions:
-                - Start version type
-                - Start version
-                - End version type
-                - End version
+        The data it extracts contains:
+        - CVE_ID: the cve id
+        - CVE_score: the cve severity score,
+        - CVE_affected_version_start_type: including or excluding
+        - CVE_affected_version_start: first version affected
+        - CVE_affected_version_end_type: including or excluding
+        - CVE_affected_version_end: last version affected
 
         Args:
             data (dict): The raw CVE data.
@@ -91,7 +91,7 @@ class CVESpider:
             dict: A dictionary containing the extracted data.
         """
 
-        affected_versions_dict = self.extract_affected_versions(data, package_name)
+        affected_versions_dict = self.__extract_affected_versions(data, package_name)
 
         score = None
 
@@ -120,7 +120,7 @@ class CVESpider:
 
         return cve_data
 
-    def extract_affected_versions(self, data: dict, package_name: str) -> dict:
+    def __extract_affected_versions(self, data: dict, package_name: str) -> dict:
         """Function to extract the affected version data.
 
         Args:
@@ -158,10 +158,10 @@ class CVESpider:
             )
 
             # next sort them by version for each key and grab the lowest one
-            versions_start_incl = self.sort_by_version(
+            versions_start_incl = self.__sort_by_version(
                 cpe_matches_filtered, "versionStartIncluding"
             )
-            versions_start_excl = self.sort_by_version(
+            versions_start_excl = self.__sort_by_version(
                 cpe_matches_filtered, "versionStartExcluding"
             )
             if len(versions_start_excl) > 0 and (
@@ -175,10 +175,10 @@ class CVESpider:
                 affected_version_start = str(versions_start_incl[0])
 
             # grab the highest for the upper version limit
-            versions_end_incl = self.sort_by_version(
+            versions_end_incl = self.__sort_by_version(
                 cpe_matches_filtered, "versionEndIncluding"
             )
-            versions_end_excl = self.sort_by_version(
+            versions_end_excl = self.__sort_by_version(
                 cpe_matches_filtered, "versionEndExcluding"
             )
             if len(versions_end_excl) > 0 and (
@@ -199,8 +199,8 @@ class CVESpider:
             "CVE_affected_version_end": affected_version_end,
         }
 
-    def sort_by_version(self, cpe_matches: list[dict], key: str) -> list[Version]:
-        """Gathers all the versions stored unders a specific key.
+    def __sort_by_version(self, cpe_matches: list[dict], key: str) -> list[Version]:
+        """Gathers all versions stored under a specific key, and sorts them.
 
         Args:
             cpe_matches (list[dict]): A list of cpeMatch dicts to search
@@ -221,8 +221,8 @@ class CVESpider:
                 pass
         return sorted(versions)
 
-    def request_cve_data(self, package_name: str) -> dict | None:
-        """Get all cves for a corresponding package.
+    def __request_cve_data(self, package_name: str) -> dict | None:
+        """Get all cve data for a corresponding package.
 
         Args:
             package_name: Name of the package to search for.
