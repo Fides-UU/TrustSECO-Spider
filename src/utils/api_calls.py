@@ -61,7 +61,7 @@ def make_api_call(api_url: str, api_type: str) -> requests.Response:
         # See if the header includes the rate limit reset time
         # If so, use it
         if 'Retry-After' in data_response.headers:
-            retry_time = data_response.headers['Retry-After']
+            retry_time = int(data_response.headers['Retry-After'])
             logging.warning(
                 f'Too many requests. Trying again in {retry_time} seconds.')
             time.sleep(retry_time)

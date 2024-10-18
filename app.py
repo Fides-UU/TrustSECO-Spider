@@ -28,6 +28,8 @@ from flask_cors import CORS
 # Import for setting file permissions on startup
 import subprocess
 
+import src.utils.packages as p
+
 
 # Create the Flask application
 app = Flask('app')
@@ -137,6 +139,27 @@ def get_tokens() -> Response:
 
     # Return the output
     response = make_response(tokens)
+    response.headers.set('Content-Type', 'application/json')
+    return response
+
+
+@app.get('/get-most-popular-packages')
+def get_most_popular_packages():
+    """Gets the most popular packages packages for a particular platform
+
+    Example data:
+    [
+        {
+            "name": "numpy",
+            "platform": "pypi",
+            "owner": "pypi",
+            "version": "1.0.2"
+        }
+    ]
+    """
+    platform = request.args.get('platform', 'pypi')
+    amount = int(request.args.get('count', '5'))
+    response = make_response(p.get_most_popular_packages(platform, amount))
     response.headers.set('Content-Type', 'application/json')
     return response
 
