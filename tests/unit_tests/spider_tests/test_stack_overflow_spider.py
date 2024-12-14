@@ -22,21 +22,24 @@ class TestSOPopularity:
     """
 
     @responses.activate
-    @pytest.mark.parametrize('return_json, expected_value', [
+    @pytest.mark.parametrize('return_json,return_json_pack,expected_value', [
         (
-            {},
-            None
+            {"total":100},
+            {"total":0},
+            0,
         ),
         (
-            {"TagPercents": None},
-            None
+            {"total":0},
+            {"total":0},
+            0,
         ),
         (
-            {"TagPercents": {"numpy": [2.1022945]}},
-            0
-        )
+            {"total":100},
+            {"total":20},
+            20,
+        ),
     ])
-    def test_unknown_package(self, return_json: dict, expected_value: tuple) -> None:
+    def test_unknown_package(self, return_json: dict, return_json_pack: dict, expected_value: tuple) -> None:
         """Test for when the function receives an unknown package name.
 
         Args:
@@ -48,51 +51,13 @@ class TestSOPopularity:
         stack_call = StackOverflowAPICall()
 
         # Add to responses
-        responses.add(responses.GET, 'https://insights.stackoverflow.com/trends/get-data',
+        responses.add(responses.GET, 'https://api.stackexchange.com/2.3/questions',
                       json=return_json, status=200)
+        responses.add(responses.GET, 'https://api.stackexchange.com/2.3/questions',
+                      json=return_json_pack, status=200)
 
         # Execute the function
-        response_data = stack_call.get_monthly_popularity('nump')
-
-        # Check that the response is correct based on the given package name
-        assert response_data == expected_value
-
-    @responses.activate
-    @pytest.mark.parametrize('return_json, expected_value', [
-        (
-            {},
-            None
-        ),
-        (
-            {"TagPercents": None},
-            None
-        ),
-        (
-            {"TagPercents": {}},
-            0
-        ),
-        (
-            {"TagPercents": {"numpy": [2.1022945]}},
-            2.1022945
-        )
-    ])
-    def test_valid_package(self, return_json: dict, expected_value: tuple) -> None:
-        """Test for when the function receives a known package name.
-
-        Args:
-            return_json (dict): The json to return from the API call
-            expected_value (tuple): The expected value of the function
-        """
-
-        # Create a Stack Overflow Call object
-        stack_call = StackOverflowAPICall()
-
-        # Add to responses
-        responses.add(responses.GET, 'https://insights.stackoverflow.com/trends/get-data',
-                      json=return_json, status=200)
-
-        # Execute the function
-        response_data = stack_call.get_monthly_popularity('numpy')
+        response_data = stack_call.get_monthly_popularity("package")
 
         # Check that the response is correct based on the given package name
         assert response_data == expected_value
@@ -104,7 +69,7 @@ class TestSOPopularity:
         # Create a Stack Overflow Call object
         stack_call = StackOverflowAPICall()
         # Add to responses
-        responses.add(responses.GET, 'https://insights.stackoverflow.com/trends/get-data',
+        responses.add(responses.GET, 'https://api.stackexchange.com/2.3/questions',
                       json={'error': 'not found'}, status=404)
 
         # Execute the function
