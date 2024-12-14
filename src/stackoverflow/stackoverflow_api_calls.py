@@ -45,6 +45,8 @@ class StackOverflowAPICall:
         ):
             total = resp_total["total"]
             total_package = resp_package["total"]
+            if total_package == 0:
+                return 0
             return (total_package / total) * 100
         else:
             return None
@@ -61,8 +63,10 @@ class StackOverflowAPICall:
         # NOTE: using api keys would be better, but there is rate limit of
         # 10000 requests per ip so no keys should be fine.
         try:
-            response = requests.get(url).json()
-            return response
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.json()
+            return None
         except requests.exceptions.RequestException as e:
             logging.error(e)
             return None
