@@ -1,6 +1,7 @@
 from typing import Iterable
 import itertools
 import re
+import logging
 
 import requests
 
@@ -42,13 +43,16 @@ def get_package_data(name: str, platform: str) -> dict | None:
     """Takes a package name and returns a dict with additional package
     information: repository owner and most recent version."""
     repo_url = get_repo_link(name, platform)
+    if not repo_url:
+        return None
     match = github_regex.match(repo_url)
     if match is not None:
         (owner, name_git) = match.group(1, 2)
     else:
         return None
     if name_git != name:
-        print(f"name not same as repo name {name} {name_git}")
+        logging.warning(f"name not same as repo name {name} {name_git}")
+        return None
     version = get_most_recent_version(name_git, owner, platform)
     return {
         "name": name,
@@ -58,10 +62,12 @@ def get_package_data(name: str, platform: str) -> dict | None:
     }
 
 
-def get_repo_link(name: str, platform: str) -> str:
+def get_repo_link(name: str, platform: str) -> str | None:
     """Get the repository link of a package."""
     url = f"https://libraries.io/api/{platform}/{name}"
     resp = make_api_call(url, constants.API_LIBRARIES)
+    if not resp:
+        return None
     return resp.json()["repository_url"]
 
 
